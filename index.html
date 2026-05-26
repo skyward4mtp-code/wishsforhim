@@ -219,8 +219,8 @@
     .glass-card{border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(40,5,9,.64),rgba(16,4,7,.8));border-radius:24px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 32px rgba(239,17,26,.12);backdrop-filter:blur(18px)}
     .glass-card h3{margin:0;color:#fff;font-size:15px;letter-spacing:.16em;text-transform:uppercase}
     .glass-card p{margin:8px 0 0;font-size:12px;line-height:1.52;color:var(--muted)}
-    .qr-box{margin-top:4px;padding:10px;border-radius:18px;background:#fff;display:flex;justify-content:center;align-items:center}
-    .qr-box img{display:block;width:100%;max-width:210px;height:auto}
+    .qr-box{margin-top:12px;padding:12px;border-radius:18px;background:#fff;display:flex;justify-content:center;align-items:center}
+    .qr-box img{display:block;width:100%;max-width:210px;aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:10px}
     .presale-links{margin-top:4px;display:grid;gap:8px}
     .presale-links a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:13px;font-weight:700}
     .presale-links a:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
@@ -234,6 +234,30 @@
     .primary-btn{border:0;background:linear-gradient(135deg,#d00912,#ff5158);box-shadow:0 10px 28px rgba(239,17,26,.28)}
     .ghost-btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08)}
     .primary-btn:hover,.ghost-btn:hover{filter:brightness(1.08)}
+
+    .primary-btn:disabled,
+    .ghost-btn:disabled,
+    .floating-write.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:grayscale(.25);
+      pointer-events:none;
+    }
+    .wish-closed-note{
+      display:none;
+      margin:10px 0 0;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,70,80,.38);
+      background:rgba(239,17,26,.12);
+      color:#ffd4d6;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:800;
+      text-align:center;
+    }
+    .wish-closed-note.show{display:block}
+
 
     footer{z-index:10;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.16em;text-transform:uppercase}
     .corner{color:#fff;font-weight:800}
@@ -387,9 +411,9 @@
 
       <aside class="side-stack">
         <section class="glass-card">
-          <h3>QR Pre-Sale / Pre-Save</h3>
-          <p>Quét mã để vào trang tổng hợp link pre-sale / pre-save.</p>
-          <div class="qr-box"><img id="qrImage" alt="QR pre-sale" /></div>
+          <h3>QR Come My Way</h3>
+          <p>Quét mã để mở link chính thức Come My Way.</p>
+          <div class="qr-box"><img id="qrImage" src="qr-comemyway.png" alt="QR Come My Way" /></div>
           <div class="presale-links" id="presaleLinks"></div>
         </section>
 
@@ -418,11 +442,12 @@
         <h3>Gửi lời chúc tới Come My Way</h3>
         <button type="button" id="closeWish" class="close-btn">×</button>
       </div>
-      <p class="form-note">Điền tên và lời chúc. Sau khi admin duyệt, comment của bạn sẽ bay ngang trên màn hình.</p>
+      <p class="form-note" id="wishFormNote">Điền tên và lời chúc. Sau khi admin duyệt, comment của bạn sẽ bay ngang trên màn hình.</p>
+      <div class="wish-closed-note" id="wishClosedNote">Come My Way đã ra mắt. Skyward đã đóng nhận lời chúc mới, cảm ơn bạn đã đồng hành cùng project ✨</div>
       <form class="wish-form" id="wishForm">
         <input id="name" maxlength="28" placeholder="Tên của Sky" required />
         <textarea id="message" maxlength="150" placeholder="Lời chúc dành cho Sơn Tùng M-TP..." required></textarea>
-        <div class="hint"><span>Luồng: gửi → chờ duyệt → được duyệt → comment bay.</span><span id="charCount">0/150</span></div>
+        <div class="hint"><span id="charCount">0/150</span></div>
         <button type="submit" class="primary-btn">Gửi lời chúc</button>
       </form>
     </div>
@@ -463,9 +488,7 @@ const CONFIG = {
   releaseAt: '2026-05-28T20:00:00+07:00',
   mvUrl: 'https://www.youtube.com/watch?v=YtkgtlfKaxM',
   presaleLandingUrl: 'https://mmusicrecords.lnk.to/comemyway',
-  preSaleLinks: [
-    
-  ],
+  preSaleLinks: [],
   adminPassword: 'skyward2026',
 
   // Dán URL Web App của Google Apps Script vào đây.
@@ -529,9 +552,50 @@ async function sheetPost(action, payload={}){
 
 function showToast(text){ toast.textContent = text; toast.classList.add('show'); clearTimeout(showToast.t); showToast.t = setTimeout(()=>toast.classList.remove('show'), 2600); }
 
+function isReleaseReached(){
+  return Date.now() >= new Date(CONFIG.releaseAt).getTime();
+}
+
+function setWishClosedState(isClosed){
+  const openBtn = $('#openWish');
+  const floatingBtn = $('#openWishFloating');
+  const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+  const closedNote = $('#wishClosedNote');
+  const formNote = $('#wishFormNote');
+
+  if(openBtn) openBtn.disabled = isClosed;
+  if(submitBtn) submitBtn.disabled = isClosed;
+
+  if(floatingBtn){
+    floatingBtn.classList.toggle('disabled', isClosed);
+    floatingBtn.setAttribute('aria-disabled', isClosed ? 'true' : 'false');
+  }
+
+  if(closedNote) closedNote.classList.toggle('show', isClosed);
+  if(formNote) formNote.style.display = isClosed ? 'none' : '';
+
+  if(form){
+    [...form.querySelectorAll('input, textarea, button')].forEach(el => {
+      el.disabled = isClosed;
+    });
+  }
+}
+
+function tryOpenWishModal(){
+  if(isReleaseReached()){
+    setWishClosedState(true);
+    showToast('Come My Way đã ra mắt, Skyward đã đóng nhận lời chúc mới ✨');
+    return;
+  }
+  openModal('#wishModal');
+}
+
+
 function refreshCounters(){
-  $('#wishCount').textContent = approved.length;
-  $('#pendingCount').textContent = pending.length;
+  const wishCountEl = $('#wishCount');
+  const pendingCountEl = $('#pendingCount');
+  if(wishCountEl) wishCountEl.textContent = approved.length;
+  if(pendingCountEl) pendingCountEl.textContent = pending.length;
 }
 
 async function loadState(){
@@ -574,8 +638,11 @@ function updateCountdown(){
     $('#statusText').textContent = 'Come My Way đã ra mắt';
     $('#mvLink').style.display = 'inline-flex';
     $('#mvLink').href = CONFIG.mvUrl;
+    setWishClosedState(true);
     return;
   }
+
+  setWishClosedState(false);
   const sec = Math.floor(diff/1000);
   const d = Math.floor(sec/86400);
   const h = Math.floor((sec%86400)/3600);
@@ -588,8 +655,12 @@ function updateCountdown(){
 }
 
 function buildQr(){
-  $('#qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(CONFIG.presaleLandingUrl)}`;
-  $('#presaleLinks').innerHTML = CONFIG.preSaleLinks.map(link => `<a href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`).join('');
+  const qrImage = $('#qrImage');
+  qrImage.src = 'qr-comemyway.png';
+  qrImage.alt = 'QR Come My Way';
+
+  $('#presaleLinks').innerHTML = '';
+  $('#presaleLinks').style.display = 'none';
 }
 
 function createMeteors(){
@@ -760,6 +831,14 @@ function loginAdmin(){
 msg.addEventListener('input', () => charCount.textContent = `${msg.value.length}/150`);
 form.addEventListener('submit', async e => {
   e.preventDefault();
+
+  if(isReleaseReached()){
+    setWishClosedState(true);
+    closeModal('#wishModal');
+    showToast('Come My Way đã ra mắt, Skyward đã đóng nhận lời chúc mới ✨');
+    return;
+  }
+
   const wish = {id: makeId(), name: safeText($('#name').value), message: safeText($('#message').value), createdAt: new Date().toISOString()};
   if(!wish.name || !wish.message) return;
 
@@ -793,8 +872,8 @@ form.addEventListener('submit', async e => {
   showToast('Lời chúc đã được gửi, đang chờ admin duyệt ✨');
 });
 
-$('#openWish').addEventListener('click', () => openModal('#wishModal'));
-$('#openWishFloating').addEventListener('click', () => openModal('#wishModal'));
+$('#openWish').addEventListener('click', tryOpenWishModal);
+$('#openWishFloating').addEventListener('click', tryOpenWishModal);
 $('#closeWish').addEventListener('click', () => closeModal('#wishModal'));
 $('#openAdmin').addEventListener('click', openAdmin);
 $('#closeAdmin').addEventListener('click', () => closeModal('#adminModal'));
@@ -817,6 +896,7 @@ window.addEventListener('resize', createMeteors);
   buildQr();
   createMeteors();
   updateCountdown();
+  setWishClosedState(isReleaseReached());
   setInterval(updateCountdown, 1000);
 
   // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
