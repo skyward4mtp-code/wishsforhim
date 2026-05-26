@@ -43,56 +43,83 @@
     .meteor::before{content:"";position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.72);box-shadow:0 0 8px 2px rgba(255,255,255,.28),0 0 14px 4px rgba(255,50,50,.15)}
     @keyframes meteorFall{0%{transform:translate3d(0,0,0) rotate(145deg);opacity:0}12%{opacity:.38}72%{opacity:.28}100%{transform:translate3d(-78vw,78vh,0) rotate(145deg);opacity:0}}
 
-    .app{position:relative;height:100%;padding:22px;display:grid;grid-template-rows:auto 1fr auto;gap:14px}
-    header{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:18px;z-index:10}
-    .brand,.tag{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.86);text-shadow:0 2px 12px rgba(0,0,0,.4)}
-    .tag{text-align:right;color:#ffdede;font-weight:700}
+    .app{position:relative;height:100%;padding:26px 22px 20px;display:grid;grid-template-rows:auto 1fr auto;gap:12px}
+    header{display:block;z-index:10}
+    .brand,.tag{display:none}
     .hero{
       text-align:center;
-      min-width:min(1420px,94vw);
+      width:100%;
+      max-width:1780px;
+      margin:0 auto;
       position:relative;
-      padding:32px 36px 36px;
-      border:1.5px solid rgba(239,17,26,.62);
-      border-radius:46px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(239,17,26,.13), transparent 38%),
-        linear-gradient(180deg, rgba(40,4,8,.36), rgba(7,0,2,.52));
-      box-shadow:
-        inset 0 0 0 1px rgba(255,45,55,.08),
-        0 0 34px rgba(239,17,26,.13),
-        0 24px 70px rgba(0,0,0,.34);
+      padding:14px 18px 0;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      box-shadow:none;
+    }
+    .project-label{
+      margin:6px 0 2px;
+      font-size:clamp(13px,1.15vw,24px);
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:.38em;
+      text-transform:uppercase;
+      color:#ff303b;
+      text-shadow:0 0 14px rgba(255,30,40,.26);
     }
     .title-img{
       display:block;
-      margin:0 auto;
-      width:min(38vw,430px);
+      margin:10px auto 0;
+      width:min(46vw,820px);
       max-width:100%;
       height:auto;
-      filter:drop-shadow(0 0 16px rgba(255,20,26,.14)) drop-shadow(0 10px 28px rgba(0,0,0,.5));
+      filter:drop-shadow(0 0 14px rgba(255,0,10,.12)) drop-shadow(0 18px 30px rgba(0,0,0,.48));
     }
-    .come-title{
-      margin:6px 0 4px;
-      font-size:clamp(22px,2.2vw,34px);
+    .return-label{
+      margin:8px auto 28px;
+      font-size:clamp(15px,1.45vw,31px);
+      line-height:1;
       font-weight:1000;
-      letter-spacing:.22em;
+      letter-spacing:.56em;
       text-transform:uppercase;
-      color:#fff6f6;
-      text-shadow:0 0 10px rgba(255,255,255,.16),0 0 22px rgba(255,60,60,.26);
-      animation:comeBlink 1.2s ease-in-out infinite alternate;
+      color:#ff303b;
+      text-shadow:0 0 14px rgba(255,30,40,.22);
     }
+    .come-title{display:none}
     @keyframes comeBlink{0%{opacity:.62;filter:brightness(.92)}100%{opacity:1;filter:brightness(1.16)}}
-    .subtitle{margin:0 auto 0;display:inline-flex;align-items:center;gap:10px;padding:9px 16px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(27,4,8,.42);backdrop-filter:blur(12px);text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:#fff;box-shadow:0 0 20px rgba(255,255,255,.1), 0 0 28px rgba(255,35,40,.14)}
-    .dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff, 0 0 18px var(--red)}
+    .subtitle{display:none}
+    .dot{display:none}
+    .countdown-shell{
+      width:min(560px,42vw);
+      margin:0 auto;
+      padding:16px 18px 16px;
+      border:1.5px solid rgba(255,37,45,.50);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,42,50,.09), transparent 48%),
+        linear-gradient(180deg, rgba(38,2,7,.34), rgba(5,0,1,.58));
+      box-shadow:inset 0 0 0 1px rgba(255,40,50,.05),0 0 36px rgba(239,17,26,.10),0 26px 70px rgba(0,0,0,.28);
+    }
+    .countdown-caption{
+      margin:0 auto 10px;
+      color:rgba(255,255,255,.84);
+      font-size:clamp(11px,.78vw,15px);
+      line-height:1.25;
+      font-weight:900;
+      letter-spacing:.01em;
+      text-shadow:0 2px 12px rgba(0,0,0,.62);
+    }
     .countdown{
-      margin:26px auto 0;
+      margin:0 auto;
       display:grid;
       grid-template-columns:repeat(4,1fr);
-      gap:20px;
+      gap:8px;
       max-width:100%;
     }
     .timebox{
-      padding:30px 18px 24px;
-      border-radius:30px;
+      padding:10px 8px 9px;
+      border-radius:14px;
       border:1.5px solid rgba(239,17,26,.48);
       background:
         radial-gradient(circle at 50% 0%, rgba(239,17,26,.09), transparent 42%),
@@ -107,7 +134,7 @@
     @keyframes timeGlow{0%{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 0 18px rgba(255,255,255,.14),0 0 28px rgba(239,17,26,.22),0 14px 32px rgba(0,0,0,.28)}100%{box-shadow:0 0 0 1px rgba(255,255,255,.18) inset,0 0 28px rgba(255,255,255,.22),0 0 46px rgba(255,110,110,.34),0 14px 32px rgba(0,0,0,.28)}}
     .timebox b{
       display:block;
-      font-size:clamp(48px,5.4vw,86px);
+      font-size:clamp(15px,1.45vw,31px);
       line-height:.92;
       color:#ff202b;
       text-shadow:0 0 18px rgba(255,32,43,.18);
@@ -115,31 +142,86 @@
     }
     .timebox span{
       display:block;
-      margin-top:12px;
+      margin-top:4px;
       color:rgba(255,255,255,.78);
-      font-size:clamp(13px,1.35vw,20px);
+      font-size:clamp(8px,.58vw,10px);
       letter-spacing:.18em;
       text-transform:uppercase;
       font-weight:900;
     }
-    .mv-link{display:none;margin:14px auto 0;width:max-content;max-width:100%;padding:13px 18px;border-radius:999px;color:#fff;background:linear-gradient(135deg,var(--red3),var(--red2));text-decoration:none;text-transform:uppercase;font-weight:900;letter-spacing:.12em;box-shadow:0 0 34px rgba(239,17,26,.42)}
+    .mv-link{display:none;margin:18px auto 0;width:max-content;max-width:100%;padding:13px 18px;border-radius:999px;color:#fff;background:linear-gradient(135deg,var(--red3),var(--red2));text-decoration:none;text-transform:uppercase;font-weight:900;letter-spacing:.12em;box-shadow:0 0 34px rgba(239,17,26,.42)}
+
+    .tracker-pill{
+  width:max-content;
+  max-width:min(560px,76vw);
+  margin:14px auto 12px;
+  padding:10px 28px;
+  border-radius:999px;
+  border:1.5px solid rgba(255,37,45,.54);
+  background:linear-gradient(180deg, rgba(54,5,10,.72), rgba(25,1,4,.76));
+  color:#fff2f2;
+  font-size:clamp(10px,.75vw,15px);
+  line-height:1.15;
+  font-weight:1000;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+    .tracker-desc{
+      max-width:min(1390px,88vw);
+      margin:0 auto;
+      color:rgba(255,255,255,.72);
+      font-family:"Cormorant Garamond","Times New Roman",serif;
+      font-size:clamp(13px,1.05vw,19px);
+      line-height:1.42;
+      font-weight:500;
+      letter-spacing:.015em;
+      text-align:center;
+      text-shadow:0 2px 18px rgba(0,0,0,.8);
+    }
 
     main{position:relative;min-height:0;z-index:5}
     .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:6}
-    .wish{position:absolute;right:-120vw;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 18px;min-width:280px;max-width:min(520px,42vw);border:1px solid rgba(255,255,255,.18);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(72,0,6,.28),rgba(10,0,2,.68));backdrop-filter:blur(12px);box-shadow:0 0 18px rgba(255,255,255,.08),0 0 30px rgba(239,17,26,.12);font-weight:700;text-shadow:0 2px 10px rgba(0,0,0,.8);white-space:normal;animation:fly linear infinite}
+    .wish{
+      position:absolute;
+      right:-120vw;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:5px;
+      padding:10px 14px;
+      min-width:220px;
+      max-width:min(420px,34vw);
+      border:1.5px solid rgba(255,45,55,.72);
+      border-radius:16px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,70,80,.16), transparent 38%),
+        linear-gradient(180deg,rgba(90,8,14,.42),rgba(30,2,6,.72));
+      backdrop-filter:blur(12px);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.04) inset,
+        0 0 18px rgba(239,17,26,.34),
+        0 0 36px rgba(239,17,26,.16),
+        0 12px 28px rgba(0,0,0,.28);
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.8);
+      white-space:normal;
+      overflow:hidden;
+      animation:fly linear infinite;
+      animation-duration:68s;
+    }
     .wish-head{display:flex;align-items:center;gap:8px}
-    .wish-star{font-style:normal;color:#ffe8e8;font-size:13px;opacity:.92}
-    .wish-name{display:block;color:#ffd1d3;font-size:15px;font-weight:900;letter-spacing:.02em}
-    .wish-message{display:block;color:#ffffff;font-size:17px;line-height:1.35;font-weight:800}
+    .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72)}
+    .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em}
+    .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
     @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-250vw - 100%))}}
 
-    .side-stack{position:absolute;right:0;top:54%;transform:translateY(-50%);display:grid;gap:14px;z-index:12;width:290px}
+    .side-stack{position:absolute;right:0;top:54%;transform:translateY(-50%);display:grid;gap:8px;z-index:12;width:290px}
     .glass-card{border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(40,5,9,.64),rgba(16,4,7,.8));border-radius:24px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 32px rgba(239,17,26,.12);backdrop-filter:blur(18px)}
     .glass-card h3{margin:0;color:#fff;font-size:15px;letter-spacing:.16em;text-transform:uppercase}
     .glass-card p{margin:8px 0 0;font-size:12px;line-height:1.52;color:var(--muted)}
-    .qr-box{margin-top:12px;padding:10px;border-radius:18px;background:#fff;display:flex;justify-content:center;align-items:center}
+    .qr-box{margin-top:4px;padding:10px;border-radius:18px;background:#fff;display:flex;justify-content:center;align-items:center}
     .qr-box img{display:block;width:100%;max-width:210px;height:auto}
-    .presale-links{margin-top:12px;display:grid;gap:8px}
+    .presale-links{margin-top:4px;display:grid;gap:8px}
     .presale-links a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:13px;font-weight:700}
     .presale-links a:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
     .action-card{display:grid;gap:10px}
@@ -156,11 +238,50 @@
     footer{z-index:10;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.16em;text-transform:uppercase}
     .corner{color:#fff;font-weight:800}
 
-    .floating-write{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:12px;padding:14px 20px 14px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(135deg,rgba(239,17,26,.92),rgba(255,95,104,.88));color:#fff;box-shadow:0 14px 36px rgba(239,17,26,.34),0 0 28px rgba(255,255,255,.08);cursor:pointer;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
-    .floating-write small{display:block;font-size:10px;opacity:.92;letter-spacing:.12em;text-transform:none;font-weight:700}
-    .floating-write span{display:block;line-height:1.05}
-    .floating-write .plus{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);font-size:22px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+    .floating-write{
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  transform:translateX(-50%);
+  z-index:70;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 16px 10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,70,70,.45);
+  background:linear-gradient(135deg,rgba(239,17,26,.32),rgba(255,95,104,.22));
+  backdrop-filter:blur(14px);
+  color:#fff;
+  box-shadow:0 8px 24px rgba(239,17,26,.16);
+  cursor:pointer;
+  font-weight:800;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
 
+.floating-write span{
+  line-height:1.05;
+  font-size:14px;
+}
+
+.floating-write small{
+  display:block;
+  font-size:10px;
+  opacity:.9;
+}
+
+.floating-write .plus{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.10);
+  font-size:18px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+}
     .toast{position:fixed;left:50%;top:22px;transform:translateX(-50%) translateY(-18px);padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(25,5,8,.84);backdrop-filter:blur(14px);box-shadow:0 18px 44px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.25s;z-index:100}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -188,7 +309,7 @@
     .wish-card{padding:12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
     .wish-card strong{display:block;font-size:14px;margin-bottom:6px}
     .wish-card p{margin:0;color:rgba(255,255,255,.84);font-size:13px;line-height:1.45}
-    .wish-meta{margin-top:8px;font-size:11px;color:rgba(255,255,255,.42)}
+    .wish-meta{margin-top:4px;font-size:11px;color:rgba(255,255,255,.42)}
     .wish-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
     .wish-actions button{min-height:38px;padding:0 14px;border-radius:12px;font-size:11px;letter-spacing:.1em;box-shadow:none;border:0;color:#fff;cursor:pointer;text-transform:uppercase;font-weight:800}
     .approve{background:linear-gradient(135deg,#0f8c5f,#17ba7d)}
@@ -196,6 +317,8 @@
     .empty{padding:18px;border-radius:16px;border:1px dashed rgba(255,255,255,.16);text-align:center;color:rgba(255,255,255,.5);font-size:13px}
 
     @media (max-width:1180px){
+      .countdown-shell{width:min(460px,70vw)}
+      .title-img{width:min(50vw,680px)}
       .side-stack{position:relative;right:auto;top:auto;transform:none;width:min(560px,100%);margin:0 auto 10px}
       main{display:flex;flex-direction:column}
       .wish-sky{position:relative;min-height:42vh;order:1}
@@ -206,15 +329,19 @@
       .app{height:auto;min-height:100%;padding:16px;grid-template-rows:auto auto auto}
       header{grid-template-columns:1fr}
       .brand,.tag{text-align:center}
-      .hero{min-width:0}
-      .hero{padding:24px 18px 26px;border-radius:30px}
-      .title-img{width:min(72vw,360px)}
-      .come-title{font-size:clamp(20px,6vw,30px);letter-spacing:.14em}
+      .hero{padding:10px 0 0}
+      .project-label{font-size:12px;letter-spacing:.22em;margin-top:4px}
+      .title-img{width:min(70vw,420px);margin-top:10px}
+      .return-label{font-size:13px;letter-spacing:.38em;margin:4px auto 20px}
+      .countdown-shell{width:min(88vw,340px);padding:14px 10px 16px;border-radius:20px}
+      .countdown-caption{font-size:12px;margin-bottom:10px}
       .countdown{grid-template-columns:repeat(2,1fr);max-width:420px;gap:12px}
-      .timebox{padding:22px 12px 18px;border-radius:22px}
+      .timebox{padding:10px 8px 9px;border-radius:14px}
+      .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
+      .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
       .wish-sky{min-height:46vh}
       .wish{max-width:min(78vw,360px)}
-      .wish-message{font-size:15px}
+      .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
       .action-grid{grid-template-columns:1fr}
       .admin-grid{grid-template-columns:1fr}
       footer{gap:8px;flex-direction:column;text-align:center}
@@ -234,16 +361,24 @@
     <header>
       <div class="brand">M-TP • Skyward</div>
       <section class="hero" aria-label="Khải Hoàn countdown">
+        <div class="project-label">Skyward Project Tracker</div>
         <img class="title-img" src="title-khai-hoan.png" alt="Khải Hoàn" />
-        <div class="come-title">COME MY WAY</div>
-        <div class="subtitle"><i class="dot"></i><span id="statusText">Ra mắt sau</span><i class="dot"></i></div>
-        <div class="countdown" id="countdown">
-          <div class="timebox"><b id="d">00</b><span>Ngày</span></div>
-          <div class="timebox"><b id="h">00</b><span>Giờ</span></div>
-          <div class="timebox"><b id="m">00</b><span>Phút</span></div>
-          <div class="timebox"><b id="s">00</b><span>Giây</span></div>
+        <div class="return-label">The Return</div>
+
+        <div class="countdown-shell">
+          <div class="countdown-caption">Đếm ngược đến ngày &quot;COME MY WAY&quot; khải hoàn</div>
+          <div class="subtitle"><i class="dot"></i><span id="statusText">Ra mắt sau</span><i class="dot"></i></div>
+          <div class="countdown" id="countdown">
+            <div class="timebox"><b id="d">00</b><span>Ngày</span></div>
+            <div class="timebox"><b id="h">00</b><span>Giờ</span></div>
+            <div class="timebox"><b id="m">00</b><span>Phút</span></div>
+            <div class="timebox"><b id="s">00</b><span>Giây</span></div>
+          </div>
         </div>
+
         <a class="mv-link" id="mvLink" href="https://www.youtube.com/" target="_blank" rel="noopener">Xem MV Come My Way</a>
+        <div class="tracker-pill">Skyward – All About Sơn Tùng M-TP</div>
+        <p class="tracker-desc">Hãy gửi lời chúc đến Sơn Tùng M-TP trước thềm comeback với siêu phẩm Come my way nhé.</p>
       </section>
       <div class="tag">All about Sơn Tùng M-TP</div>
     </header>
@@ -335,7 +470,11 @@ const CONFIG = {
     { label: 'Apple Music Pre-Add', url: 'https://example.com/apple-music-presave' },
     { label: 'YouTube Premiere', url: 'https://example.com/youtube-premiere' }
   ],
-  adminPassword: 'skyward2026'
+  adminPassword: 'skyward2026',
+
+  // Dán URL Web App của Google Apps Script vào đây.
+  // Ví dụ: https://script.google.com/macros/s/AKfycbx.../exec
+  googleScriptUrl: 'https://script.google.com/macros/s/AKfycbwmtCHMc1tdSf8AZw7vqHxQiKFIKWcPfiJdWNNijNjTF4Wt-jv1w96HwYpBoRPkFrGf5w/exec'
 };
 
 const sampleApproved = [
@@ -368,6 +507,30 @@ function getStore(key, fallback=[]){ try { return JSON.parse(localStorage.getIte
 function setStore(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 function formatDate(v){ try { return new Date(v).toLocaleString('vi-VN'); } catch(e){ return v || ''; } }
 
+function hasGoogleSheet(){
+  return CONFIG.googleScriptUrl && !CONFIG.googleScriptUrl.includes('DAN_LINK_GOOGLE_APPS_SCRIPT');
+}
+
+async function sheetGet(action){
+  const url = `${CONFIG.googleScriptUrl}?action=${encodeURIComponent(action)}&t=${Date.now()}`;
+  const res = await fetch(url, { method:'GET' });
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.error || 'Google Sheet API error');
+  return data;
+}
+
+async function sheetPost(action, payload={}){
+  const res = await fetch(CONFIG.googleScriptUrl, {
+    method:'POST',
+    // Dùng text/plain để tránh lỗi preflight CORS khi gọi Google Apps Script.
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, ...payload })
+  });
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.error || 'Google Sheet API error');
+  return data;
+}
+
 function showToast(text){ toast.textContent = text; toast.classList.add('show'); clearTimeout(showToast.t); showToast.t = setTimeout(()=>toast.classList.remove('show'), 2600); }
 
 function refreshCounters(){
@@ -375,7 +538,28 @@ function refreshCounters(){
   $('#pendingCount').textContent = pending.length;
 }
 
-function loadState(){
+async function loadState(){
+  // Nếu đã cấu hình Google Apps Script thì lấy dữ liệu từ Google Sheet.
+  if(hasGoogleSheet()){
+    try{
+      const data = await sheetGet('list');
+      pending = data.pending || [];
+      approved = data.approved || [];
+
+      // Nếu sheet chưa có lời chúc nào, vẫn hiện sample demo.
+      if(!approved.length && !pending.length){
+        approved = [...sampleApproved];
+      }
+
+      refreshCounters();
+      return;
+    }catch(err){
+      console.error(err);
+      showToast('Không tải được Google Sheet, tạm dùng dữ liệu local.');
+    }
+  }
+
+  // Fallback: LocalStorage nếu chưa cấu hình Google Sheet hoặc Google Sheet lỗi.
   pending = getStore(STORAGE.pending, []);
   approved = getStore(STORAGE.approved, []);
   if(!approved.length){
@@ -429,23 +613,55 @@ function createMeteors(){
 
 function spawnWish(wish){
   if(!wishSky) return;
+
   const el = document.createElement('div');
   el.className = 'wish';
-  const lanes = Math.max(4, Math.floor(Math.max(320, wishSky.clientHeight) / 132));
-  laneCursor = (laneCursor + 1) % lanes;
-  const top = 4 + laneCursor * (84 / lanes) + Math.random()*2;
-  el.style.top = `${Math.min(88, top)}%`;
-  el.style.animationDuration = `${28 + Math.random()*14}s`;
+
+  // Chia lane cố định. Mỗi lane cách nhau xa để card không đè lên nhau.
+  const skyHeight = Math.max(420, wishSky.clientHeight || 420);
+  const cardHeight = window.innerWidth < 860 ? 92 : 104;
+  const lanes = Math.max(3, Math.floor(skyHeight / cardHeight));
+  const laneIndex = laneCursor % lanes;
+  laneCursor++;
+
+  const topStart = 3;
+  const topEnd = 82;
+  const step = lanes <= 1 ? 0 : (topEnd - topStart) / (lanes - 1);
+  const top = topStart + laneIndex * step;
+
+  el.style.top = `${Math.min(84, top)}%`;
+
+  // Chạy chậm hơn để đọc được, đồng thời giữ card trên màn hình lâu hơn.
+  const duration = 72 + Math.random() * 18;
+  el.style.animationDuration = `${duration}s`;
+
   el.innerHTML = `<div class="wish-head"><i class="wish-star">✦</i><span class="wish-name">${escapeHtml(wish.name)}</span></div><div class="wish-message">${escapeHtml(wish.message)}</div>`;
+
   wishSky.appendChild(el);
-  setTimeout(() => el.remove(), 46000);
+  setTimeout(() => el.remove(), (duration + 3) * 1000);
 }
 
 function loopWishes(){
   if(approved.length){
     spawnWish(approved[Math.floor(Math.random()*approved.length)]);
   }
-  setTimeout(loopWishes, 1100 + Math.random()*900);
+
+  // Mỗi lời chúc cách nhau 8-12 giây để không bị chồng lên nhau.
+  setTimeout(loopWishes, 8000 + Math.random()*4000);
+}
+
+
+async function reloadWishesFromSheet(){
+  if(!hasGoogleSheet()) return;
+  try{
+    const data = await sheetGet('list');
+    pending = data.pending || [];
+    approved = data.approved || [];
+    refreshCounters();
+    if(getStore(STORAGE.admin,false)) renderAdminLists();
+  }catch(err){
+    console.warn('Không reload được Google Sheet:', err);
+  }
 }
 
 function renderWishCards(listEl, items, type){
@@ -472,7 +688,25 @@ function renderAdminLists(){
   refreshCounters();
 }
 
-function approveWish(id){
+async function approveWish(id){
+  if(hasGoogleSheet()){
+    try{
+      await sheetPost('approve', { id });
+      const data = await sheetGet('list');
+      pending = data.pending || [];
+      approved = data.approved || [];
+      renderAdminLists();
+      const approvedItem = approved.find(x => x.id === id);
+      if(approvedItem) spawnWish(approvedItem);
+      showToast('Đã duyệt lời chúc, comment bắt đầu bay ✨');
+      return;
+    }catch(err){
+      console.error(err);
+      showToast('Duyệt trên Google Sheet lỗi. Kiểm tra Apps Script.');
+      return;
+    }
+  }
+
   const idx = pending.findIndex(x => x.id === id);
   if(idx < 0) return;
   const item = pending.splice(idx,1)[0];
@@ -484,7 +718,24 @@ function approveWish(id){
   spawnWish(approvedItem);
   showToast('Đã duyệt lời chúc, comment bắt đầu bay ✨');
 }
-function rejectWish(id){
+
+async function rejectWish(id){
+  if(hasGoogleSheet()){
+    try{
+      await sheetPost('reject', { id });
+      const data = await sheetGet('list');
+      pending = data.pending || [];
+      approved = data.approved || [];
+      renderAdminLists();
+      showToast('Đã từ chối lời chúc.');
+      return;
+    }catch(err){
+      console.error(err);
+      showToast('Từ chối trên Google Sheet lỗi. Kiểm tra Apps Script.');
+      return;
+    }
+  }
+
   pending = pending.filter(x => x.id !== id);
   setStore(STORAGE.pending, pending);
   renderAdminLists();
@@ -511,10 +762,31 @@ function loginAdmin(){
 }
 
 msg.addEventListener('input', () => charCount.textContent = `${msg.value.length}/150`);
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
   const wish = {id: makeId(), name: safeText($('#name').value), message: safeText($('#message').value), createdAt: new Date().toISOString()};
   if(!wish.name || !wish.message) return;
+
+  if(hasGoogleSheet()){
+    try{
+      await sheetPost('submit', wish);
+      const data = await sheetGet('list');
+      pending = data.pending || [];
+      approved = data.approved || [];
+      refreshCounters();
+      if(getStore(STORAGE.admin,false)) renderAdminLists();
+      form.reset();
+      charCount.textContent = '0/150';
+      closeModal('#wishModal');
+      showToast('Lời chúc đã được gửi vào Google Sheet, đang chờ admin duyệt ✨');
+      return;
+    }catch(err){
+      console.error(err);
+      showToast('Gửi Google Sheet lỗi. Kiểm tra URL Apps Script.');
+      return;
+    }
+  }
+
   pending.push(wish);
   setStore(STORAGE.pending, pending.slice(-300));
   refreshCounters();
@@ -544,13 +816,17 @@ $('#pendingList').addEventListener('click', e => {
 });
 window.addEventListener('resize', createMeteors);
 
-(function init(){
-  loadState();
+(async function init(){
+  await loadState();
   buildQr();
   createMeteors();
   updateCountdown();
   setInterval(updateCountdown, 1000);
-  approved.slice(0,4).forEach((w,i) => setTimeout(() => spawnWish(w), i*450));
+
+  // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
+  setInterval(reloadWishesFromSheet, 15000);
+
+  approved.slice(0,4).forEach((w,i) => setTimeout(() => spawnWish(w), i*4200));
   setTimeout(loopWishes, 1200);
 })();
 </script>
