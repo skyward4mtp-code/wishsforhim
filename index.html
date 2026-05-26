@@ -180,7 +180,7 @@
     }
 
     main{position:relative;min-height:0;z-index:5}
-    .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:6;min-height:42vh}
+    .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:2;min-height:42vh;pointer-events:none}
     .wish{
       position:absolute;
       right:-34vw;
@@ -215,8 +215,8 @@
     .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
     @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-250vw - 100%))}}
 
-    .side-stack{position:absolute;right:0;top:54%;transform:translateY(-50%);display:grid;gap:8px;z-index:12;width:290px}
-    .glass-card{border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(40,5,9,.64),rgba(16,4,7,.8));border-radius:24px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 32px rgba(239,17,26,.12);backdrop-filter:blur(18px)}
+    .side-stack{position:absolute;right:0;top:54%;transform:translateY(-50%);display:grid;gap:8px;z-index:35;width:290px}
+    .glass-card{position:relative;z-index:36;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(40,5,9,.72),rgba(16,4,7,.9));border-radius:24px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 32px rgba(239,17,26,.12);backdrop-filter:blur(18px)}
     .glass-card h3{margin:0;color:#fff;font-size:15px;letter-spacing:.16em;text-transform:uppercase}
     .glass-card p{margin:8px 0 0;font-size:12px;line-height:1.52;color:var(--muted)}
     .qr-box{margin-top:12px;padding:12px;border-radius:18px;background:#fff;display:flex;justify-content:center;align-items:center}
@@ -234,6 +234,14 @@
     .primary-btn{border:0;background:linear-gradient(135deg,#d00912,#ff5158);box-shadow:0 10px 28px rgba(239,17,26,.28)}
     .ghost-btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08)}
     .primary-btn:hover,.ghost-btn:hover{filter:brightness(1.08)}
+
+    .primary-btn.loading{
+      opacity:.72;
+      cursor:wait;
+      filter:saturate(.85);
+      pointer-events:none;
+    }
+
 
     .primary-btn:disabled,
     .ghost-btn:disabled,
@@ -346,7 +354,7 @@
       .side-stack{position:relative;right:auto;top:auto;transform:none;width:min(560px,100%);margin:0 auto 10px}
       main{display:flex;flex-direction:column}
       .wish-sky{position:relative;min-height:42vh;order:1}
-      .side-stack{order:2}
+      .side-stack{order:2;position:relative;z-index:35}
     }
     @media (max-width:860px){
       body{overflow:auto}
@@ -363,7 +371,7 @@
       .timebox{padding:10px 8px 9px;border-radius:14px}
       .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
       .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
-      .wish-sky{min-height:46vh}
+      .wish-sky{min-height:30vh;max-height:30vh;margin-bottom:12px;overflow:hidden;z-index:2}
       .wish{max-width:min(78vw,360px)}
       .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
       .action-grid{grid-template-columns:1fr}
@@ -411,8 +419,8 @@
 
       <aside class="side-stack">
         <section class="glass-card">
-          <h3>QR Pre-Save Come My Way</h3>
-          <p>Quét mã để mở link pre-save chính thức cho Come My Way.</p>
+          <h3>QR PRE-SAVE COME MY WAY</h3>
+          <p>Quét mã để mở link pre-save chính thức của Come My Way.</p>
           <div class="qr-box"><img id="qrImage" src="qr-comemyway.png" alt="QR Come My Way" /></div>
           <div class="presale-links" id="presaleLinks"></div>
         </section>
@@ -428,7 +436,7 @@
       </aside>
     </main>
 
-    <footer><span>Project by <b class="corner">Skyward</b></span><span>Sơn Tùng M-TP Comeback</span></footer>
+    <footer><span>Project by <b class="corner">Skyward</b></span></footer>
   </div>
 
   <button type="button" class="floating-write" id="openWishFloating" aria-label="Mở popup gửi lời chúc">
@@ -489,7 +497,7 @@ const CONFIG = {
   mvUrl: 'https://www.youtube.com/watch?v=YtkgtlfKaxM',
   presaleLandingUrl: 'https://mmusicrecords.lnk.to/comemyway',
   preSaleLinks: [],
-  adminPassword: 'skyward2026',
+  adminPassword: 'TunTunlamattroinho',
 
   // Dán URL Web App của Google Apps Script vào đây.
   // Ví dụ: https://script.google.com/macros/s/AKfycbx.../exec
@@ -518,6 +526,7 @@ const toast = $('#toast');
 let approved = [];
 let pending = [];
 let laneCursor = 0;
+let isSubmittingWish = false;
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
 function escapeHtml(str){ return safeText(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -837,6 +846,8 @@ msg.addEventListener('input', () => charCount.textContent = `${msg.value.length}
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
+  if(isSubmittingWish) return;
+
   if(isReleaseReached()){
     setWishClosedState(true);
     closeModal('#wishModal');
@@ -844,11 +855,28 @@ form.addEventListener('submit', async e => {
     return;
   }
 
-  const wish = {id: makeId(), name: safeText($('#name').value), message: safeText($('#message').value), createdAt: new Date().toISOString()};
-  if(!wish.name || !wish.message) return;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  isSubmittingWish = true;
+  if(submitBtn){
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    submitBtn.dataset.originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Đang gửi...';
+  }
 
-  if(hasGoogleSheet()){
-    try{
+  const wish = {id: makeId(), name: safeText($('#name').value), message: safeText($('#message').value), createdAt: new Date().toISOString()};
+  if(!wish.name || !wish.message){
+    isSubmittingWish = false;
+    if(submitBtn){
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      submitBtn.textContent = submitBtn.dataset.originalText || 'Gửi lời chúc';
+    }
+    return;
+  }
+
+  try{
+    if(hasGoogleSheet()){
       await sheetPost('submit', wish);
       const data = await sheetGet('list');
       pending = data.pending || [];
@@ -860,21 +888,27 @@ form.addEventListener('submit', async e => {
       closeModal('#wishModal');
       showToast('Lời chúc đã được gửi vào Google Sheet, đang chờ admin duyệt ✨');
       return;
-    }catch(err){
-      console.error(err);
-      showToast('Gửi Google Sheet lỗi. Kiểm tra URL Apps Script.');
-      return;
+    }
+
+    pending.push(wish);
+    setStore(STORAGE.pending, pending.slice(-300));
+    refreshCounters();
+    if(getStore(STORAGE.admin,false)) renderAdminLists();
+    form.reset();
+    charCount.textContent = '0/150';
+    closeModal('#wishModal');
+    showToast('Lời chúc đã được gửi, đang chờ admin duyệt ✨');
+  }catch(err){
+    console.error(err);
+    showToast('Gửi lời chúc lỗi. Vui lòng thử lại sau.');
+  }finally{
+    isSubmittingWish = false;
+    if(submitBtn){
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      submitBtn.textContent = submitBtn.dataset.originalText || 'Gửi lời chúc';
     }
   }
-
-  pending.push(wish);
-  setStore(STORAGE.pending, pending.slice(-300));
-  refreshCounters();
-  if(getStore(STORAGE.admin,false)) renderAdminLists();
-  form.reset();
-  charCount.textContent = '0/150';
-  closeModal('#wishModal');
-  showToast('Lời chúc đã được gửi, đang chờ admin duyệt ✨');
 });
 
 $('#openWish').addEventListener('click', tryOpenWishModal);
@@ -884,12 +918,21 @@ $('#openAdmin').addEventListener('click', openAdmin);
 $('#closeAdmin').addEventListener('click', () => closeModal('#adminModal'));
 $('#loginAdmin').addEventListener('click', loginAdmin);
 $('#adminPassword').addEventListener('keydown', e => { if(e.key === 'Enter') loginAdmin(); });
-$('#pendingList').addEventListener('click', e => {
+$('#pendingList').addEventListener('click', async e => {
   const btn = e.target.closest('button[data-action]');
-  if(!btn) return;
+  if(!btn || btn.disabled) return;
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+
   const id = btn.dataset.id;
-  if(btn.dataset.action === 'approve') approveWish(id);
-  if(btn.dataset.action === 'reject') rejectWish(id);
+  try{
+    if(btn.dataset.action === 'approve') await approveWish(id);
+    if(btn.dataset.action === 'reject') await rejectWish(id);
+  }finally{
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
 });
 ['#wishModal','#adminModal'].forEach(sel => {
   $(sel).addEventListener('click', e => { if(e.target === $(sel)) closeModal(sel); });
