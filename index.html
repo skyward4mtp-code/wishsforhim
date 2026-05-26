@@ -180,10 +180,10 @@
     }
 
     main{position:relative;min-height:0;z-index:5}
-    .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:6}
+    .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:6;min-height:42vh}
     .wish{
       position:absolute;
-      right:-120vw;
+      right:-34vw;
       display:flex;
       flex-direction:column;
       align-items:flex-start;
@@ -678,7 +678,7 @@ function createMeteors(){
   }
 }
 
-function spawnWish(wish){
+function spawnWish(wish, immediate=false){
   if(!wishSky) return;
 
   const el = document.createElement('div');
@@ -697,6 +697,11 @@ function spawnWish(wish){
   const top = topStart + laneIndex * step;
 
   el.style.top = `${Math.min(84, top)}%`;
+
+  // Nếu immediate=true, lời chúc xuất hiện ngay trong màn hình khi vừa mở web.
+  if(immediate){
+    el.style.right = `${8 + (laneIndex % 3) * 18}vw`;
+  }
 
   // Chạy chậm hơn để đọc được, đồng thời giữ card trên màn hình lâu hơn.
   const duration = 72 + Math.random() * 18;
@@ -902,8 +907,10 @@ window.addEventListener('resize', createMeteors);
   // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
   setInterval(reloadWishesFromSheet, 15000);
 
-  approved.slice(0,4).forEach((w,i) => setTimeout(() => spawnWish(w), i*4200));
-  setTimeout(loopWishes, 1200);
+  approved.slice(0,5).forEach((w,i) => {
+    setTimeout(() => spawnWish(w, true), i*650);
+  });
+  setTimeout(loopWishes, 1800);
 })();
 </script>
 </body>
