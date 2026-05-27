@@ -346,6 +346,33 @@
       letter-spacing:.08em;
       text-transform:uppercase;
     }
+    .page-size-label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-left:8px;
+      color:rgba(255,255,255,.72);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .page-size-select{
+      height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,70,80,.36);
+      background:rgba(40,4,8,.92);
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      outline:none;
+      cursor:pointer;
+    }
+    .page-size-select:focus{
+      border-color:rgba(255,90,100,.72);
+      box-shadow:0 0 0 3px rgba(255,70,80,.14);
+    }
     .approved-item{
       padding:14px 15px;
       border-radius:18px;
@@ -610,6 +637,8 @@
       .approved-pagination{gap:6px;margin-top:14px}
       .page-btn{min-width:34px;height:34px;padding:0 10px;font-size:12px}
       .page-info{width:100%;text-align:center;margin-top:2px}
+      .page-size-label{width:100%;justify-content:center;margin-left:0;margin-top:4px}
+      .page-size-select{height:34px;font-size:12px}
       .approved-title{font-size:22px}
       .approved-desc{font-size:13px}
       .admin-grid{grid-template-columns:1fr}
@@ -759,8 +788,9 @@ let isSubmittingWish = false;
 let wishQueueIndex = 0;
 let laneCursor = 0;
 let loopTimer = null;
-const PUBLIC_PAGE_SIZE = 10;
+let PUBLIC_PAGE_SIZE = 20;
 let publicApprovedPage = 1;
+const PUBLIC_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
 function escapeHtml(str){ return safeText(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -1083,8 +1113,23 @@ function renderPublicPagination(totalPages){
   const pageEl = $('#approvedPagination');
   if(!pageEl) return;
 
+  const sizeOptions = PUBLIC_PAGE_SIZE_OPTIONS.map(size => `
+    <option value="${size}" ${size === PUBLIC_PAGE_SIZE ? 'selected' : ''}>
+      ${size} lời chúc/trang
+    </option>
+  `).join('');
+
+  const sizeSelectHtml = `
+    <label class="page-size-label">
+      Hiển thị
+      <select id="publicPageSize" class="page-size-select">
+        ${sizeOptions}
+      </select>
+    </label>
+  `;
+
   if(totalPages <= 1){
-    pageEl.innerHTML = '';
+    pageEl.innerHTML = sizeSelectHtml;
     return;
   }
 
@@ -1113,6 +1158,8 @@ function renderPublicPagination(totalPages){
   buttons.push(`
     <span class="page-info">Trang ${publicApprovedPage}/${totalPages}</span>
   `);
+
+  buttons.push(sizeSelectHtml);
 
   pageEl.innerHTML = buttons.join('');
 }
@@ -1324,6 +1371,20 @@ if(approvedPagination){
       publicApprovedPage = Number(page) || 1;
     }
 
+    renderPublicApprovedList();
+
+    const section = $('#approvedSection');
+    if(section){
+      section.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  });
+
+  approvedPagination.addEventListener('change', e => {
+    const select = e.target.closest('#publicPageSize');
+    if(!select) return;
+
+    PUBLIC_PAGE_SIZE = Number(select.value) || 20;
+    publicApprovedPage = 1;
     renderPublicApprovedList();
 
     const section = $('#approvedSection');
