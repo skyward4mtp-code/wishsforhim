@@ -19,31 +19,44 @@
       --redGlow:rgba(239,17,26,.38);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:#110003;color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    body{overflow:hidden}
+    html,body{min-height:100%;margin:0;color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    html{background:#110003}
+    body{
+      overflow-x:hidden;
+      overflow-y:auto;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255,70,80,.13), transparent 30%),
+        radial-gradient(circle at 50% 62%, rgba(255,0,0,.10), transparent 42%),
+        linear-gradient(180deg, rgba(18,0,3,.58) 0%, rgba(18,0,3,.58) 100%),
+        url("bg-red-stars.jpg") center center / cover fixed no-repeat;
+    }
     body::before{
-      content:"";position:fixed;inset:0;z-index:-6;
-      background:url("bg-red-stars.jpg") center/cover no-repeat;
-      filter:brightness(.92) saturate(1.04);
-      transform:scale(1.02);
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(16,0,3,.38), rgba(16,0,3,.42)),
+        linear-gradient(90deg, rgba(0,0,0,.26), rgba(0,0,0,.02) 35%, rgba(0,0,0,.30));
     }
     body::after{
-      content:"";position:fixed;inset:0;z-index:-5;pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 12%, rgba(255,120,120,.14), transparent 26%),
-        radial-gradient(circle at 50% 56%, rgba(255,0,0,.08), transparent 40%),
-        linear-gradient(180deg, rgba(20,0,3,.18) 0%, rgba(10,0,2,.36) 55%, rgba(5,0,1,.66) 100%),
-        linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,.02) 35%, rgba(0,0,0,.34));
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      background:linear-gradient(180deg, rgba(255,30,40,.035), rgba(255,30,40,.035));
     }
     .noise,.scanlines,.meteors{position:fixed;inset:0;pointer-events:none}
-    .noise{z-index:-1;opacity:.11;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E")}
+    .noise{z-index:1;opacity:.11;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E")}
     .scanlines{z-index:42;opacity:.08;background:repeating-linear-gradient(180deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px)}
     .meteors{z-index:1;overflow:hidden}
     .meteor{position:absolute;width:190px;height:2px;border-radius:999px;transform:rotate(145deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,120,120,.45));box-shadow:0 0 6px rgba(255,255,255,.18),0 0 12px rgba(255,30,30,.14);animation:meteorFall linear infinite;opacity:0;filter:blur(.15px)}
     .meteor::before{content:"";position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.72);box-shadow:0 0 8px 2px rgba(255,255,255,.28),0 0 14px 4px rgba(255,50,50,.15)}
     @keyframes meteorFall{0%{transform:translate3d(0,0,0) rotate(145deg);opacity:0}12%{opacity:.38}72%{opacity:.28}100%{transform:translate3d(-78vw,78vh,0) rotate(145deg);opacity:0}}
 
-    .app{position:relative;height:100%;padding:26px 22px 20px;display:grid;grid-template-rows:auto 1fr auto;gap:12px}
+    .app{position:relative;z-index:2;min-height:100vh;height:auto;padding:26px 22px 20px;display:grid;grid-template-rows:auto minmax(42vh,1fr) auto auto;gap:12px}
     header{display:block;z-index:10}
     .brand,.tag{display:none}
     .hero{
@@ -179,7 +192,7 @@
       text-shadow:0 2px 18px rgba(0,0,0,.8);
     }
 
-    main{position:relative;min-height:0;z-index:5}
+    main{position:relative;min-height:42vh;z-index:5}
     .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:2;min-height:42vh;pointer-events:none}
     .wish{
       position:absolute;
@@ -214,6 +227,99 @@
     .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em}
     .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
     @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-250vw - 100%))}}
+
+    .approved-section{
+      width:min(1180px,92vw);
+      margin:10px auto 72px;
+      padding:22px;
+      border-radius:28px;
+      border:1px solid rgba(255,45,55,.32);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,42,50,.10), transparent 44%),
+        linear-gradient(180deg, rgba(42,4,8,.70), rgba(12,1,4,.82));
+      box-shadow:0 24px 70px rgba(0,0,0,.34),0 0 36px rgba(239,17,26,.10);
+      backdrop-filter:blur(16px);
+      position:relative;
+      z-index:8;
+    }
+    .approved-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .approved-kicker{
+      margin:0 0 6px;
+      color:#ff4b55;
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+    .approved-title{
+      margin:0;
+      color:#fff;
+      font-size:clamp(22px,2vw,34px);
+      line-height:1.1;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+      text-shadow:0 0 18px rgba(255,40,50,.18);
+    }
+    .approved-desc{
+      margin:8px 0 0;
+      max-width:720px;
+      color:rgba(255,255,255,.72);
+      font-size:14px;
+      line-height:1.55;
+    }
+    .approved-count{
+      flex:0 0 auto;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,60,70,.38);
+      background:rgba(255,255,255,.06);
+      color:#fff1f1;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .approved-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .approved-item{
+      padding:14px 15px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.055);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+    }
+    .approved-item strong{
+      display:block;
+      margin-bottom:7px;
+      color:#ffd1d3;
+      font-size:14px;
+      font-weight:1000;
+    }
+    .approved-item p{
+      margin:0;
+      color:#fff;
+      font-size:14px;
+      line-height:1.48;
+      font-weight:650;
+    }
+    .approved-empty{
+      grid-column:1/-1;
+      padding:22px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.18);
+      text-align:center;
+      color:rgba(255,255,255,.62);
+      font-size:14px;
+    }
 
     .side-stack{position:absolute;right:0;top:54%;transform:translateY(-50%);display:grid;gap:8px;z-index:35;width:290px}
     .glass-card{position:relative;z-index:36;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(40,5,9,.72),rgba(16,4,7,.9));border-radius:24px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 32px rgba(239,17,26,.12);backdrop-filter:blur(18px)}
@@ -271,12 +377,12 @@
     .corner{color:#fff;font-weight:800}
 
     .floating-write{
+  display:none !important;
   position:fixed;
   left:50%;
   bottom:24px;
   transform:translateX(-50%);
   z-index:70;
-  display:flex;
   align-items:center;
   gap:10px;
   padding:10px 16px 10px 14px;
@@ -404,7 +510,7 @@
     }
     @media (max-width:860px){
       body{overflow:auto}
-      .app{height:auto;min-height:100%;padding:16px;grid-template-rows:auto auto auto}
+      .app{height:auto;min-height:100%;padding:16px;grid-template-rows:auto auto auto auto}
       header{grid-template-columns:1fr}
       .brand,.tag{text-align:center}
       .hero{padding:10px 0 0}
@@ -421,6 +527,14 @@
       .wish{max-width:min(78vw,360px)}
       .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
       .action-grid{grid-template-columns:1fr}
+
+      .side-stack{width:100%;max-width:560px;margin:8px auto 18px}
+      .glass-card.action-card{padding:18px;border-radius:24px}
+      .approved-section{width:100%;margin:8px auto 22px;padding:16px;border-radius:22px}
+      .approved-head{align-items:flex-start;flex-direction:column}
+      .approved-list{grid-template-columns:1fr}
+      .approved-title{font-size:22px}
+      .approved-desc{font-size:13px}
       .admin-grid{grid-template-columns:1fr}
       footer{gap:8px;flex-direction:column;text-align:center}
       .admin-login{grid-template-columns:1fr}
@@ -465,7 +579,7 @@
 
       <aside class="side-stack">
         <section class="glass-card action-card">
-          <p style="margin:0 0 2px;color:#fff8f8;font-size:13px;line-height:1.5">Muốn gửi lời chúc? Nhấn nút <b>Gửi lời chúc</b> bên dưới hoặc nút đỏ ở cuối màn hình.</p>
+          <p style="margin:0 0 2px;color:#fff8f8;font-size:13px;line-height:1.5">Muốn gửi lời chúc? Nhấn nút <b>Gửi lời chúc</b> bên dưới. Admin duyệt comment ở nút cuối cùng.</p>
           <div class="action-grid">
             
           </div>
@@ -474,6 +588,18 @@
         </section>
       </aside>
     </main>
+
+    <section class="approved-section" id="approvedSection">
+      <div class="approved-head">
+        <div>
+          <p class="approved-kicker">Approved Wishes</p>
+          <h2 class="approved-title">Danh sách lời chúc đã duyệt</h2>
+          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc đã được admin phê duyệt. Phần lời chúc bay ngang vẫn giữ để tạo hiệu ứng không khí trên màn hình chính.</p>
+        </div>
+        <div class="approved-count"><span id="approvedPublicCount">0</span> lời chúc</div>
+      </div>
+      <div class="approved-list" id="approvedPublicList"></div>
+    </section>
 
     <footer><span>Project by <b class="corner">Skyward</b></span></footer>
   </div>
@@ -644,6 +770,7 @@ function refreshCounters(){
   const pendingCountEl = $('#pendingCount');
   if(wishCountEl) wishCountEl.textContent = approved.length;
   if(pendingCountEl) pendingCountEl.textContent = pending.length;
+  renderPublicApprovedList();
 }
 
 async function loadState(){
@@ -681,7 +808,9 @@ function updateCountdown(){
   const target = new Date(CONFIG.releaseAt).getTime();
   const now = Date.now();
   const diff = target - now;
+  const countdownShell = document.querySelector('.countdown-shell');
   if(diff <= 0){
+    if(countdownShell) countdownShell.style.display = 'none';
     $('#countdown').style.display = 'none';
     $('#statusText').textContent = 'Come My Way đã ra mắt';
     $('#mvLink').style.display = 'inline-flex';
@@ -690,6 +819,8 @@ function updateCountdown(){
     return;
   }
 
+  if(countdownShell) countdownShell.style.display = '';
+  $('#countdown').style.display = 'grid';
   setWishClosedState(false);
   const sec = Math.floor(diff/1000);
   const d = Math.floor(sec/86400);
@@ -794,6 +925,26 @@ function renderWishCards(listEl, items, type){
           <button type="button" class="approve" data-action="approve" data-id="${item.id}">Duyệt</button>
           <button type="button" class="reject" data-action="reject" data-id="${item.id}">Từ chối</button>
         </div>` : ''}
+    </article>`).join('');
+}
+
+function renderPublicApprovedList(){
+  const listEl = $('#approvedPublicList');
+  const countEl = $('#approvedPublicCount');
+  if(!listEl) return;
+
+  const items = approved.slice().reverse();
+  if(countEl) countEl.textContent = items.length;
+
+  if(!items.length){
+    listEl.innerHTML = '<div class="approved-empty">Chưa có lời chúc nào được duyệt.</div>';
+    return;
+  }
+
+  listEl.innerHTML = items.map(item => `
+    <article class="approved-item">
+      <strong>✦ ${escapeHtml(item.name)}</strong>
+      <p>${escapeHtml(item.message)}</p>
     </article>`).join('');
 }
 
