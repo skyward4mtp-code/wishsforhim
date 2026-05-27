@@ -234,9 +234,9 @@
       animation:flyOnce linear 1 forwards;
     }
     .wish-head{display:flex;align-items:center;gap:8px}
-    .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72)}
-    .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em}
-    .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
+    .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72);flex:0 0 auto}
+    .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em;line-height:1.2}
+    .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.32;font-weight:800}
     @keyframes flyOnce{from{transform:translateX(0)}to{transform:translateX(calc(-220vw - 100%))}}
 
     .approved-section{
@@ -536,9 +536,18 @@
       .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
       .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
       main{padding-bottom:96px}
-      .wish-sky{min-height:clamp(300px,38vh,380px);height:clamp(300px,38vh,380px);margin-bottom:10px;overflow:hidden;z-index:2}
-      .wish{min-width:250px;max-width:min(78vw,340px)}
-      .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
+      .wish-sky{min-height:300px;height:300px;margin-bottom:10px;overflow:hidden;z-index:2}
+      .wish{
+        min-width:0;
+        width:min(72vw,240px);
+        max-width:min(72vw,240px);
+        padding:7px 9px;
+        border-radius:14px;
+      }
+      .wish-head{gap:5px}
+      .wish-star{font-size:7px}
+      .wish-name{font-size:8px;line-height:1.15}
+      .wish-message{display:block;color:#ffffff;font-size:8.5px;line-height:1.22;font-weight:780}
       .action-grid{grid-template-columns:1fr}
 
       .side-stack{width:100%;max-width:560px;margin:8px auto 18px}
@@ -597,9 +606,9 @@
     <section class="approved-section" id="approvedSection">
       <div class="approved-head">
         <div>
-          <p class="approved-kicker">Wishes for Sơn Tùng M-TP</p>
-          <h2 class="approved-title">Những lời yêu thương sky dành tặng Tùng</h2>
-          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc đã được admin phê duyệt</p>
+          <p class="approved-kicker">Approved Wishes</p>
+          <h2 class="approved-title">Danh sách lời chúc đã duyệt</h2>
+          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc đã được admin phê duyệt. Phần lời chúc bay ngang vẫn giữ để tạo hiệu ứng không khí trên màn hình chính.</p>
         </div>
         <div class="approved-count"><span id="approvedPublicCount">0</span> lời chúc</div>
       </div>
@@ -867,13 +876,13 @@ function getLaneCount(){
 
 function getLaneTop(laneIndex){
   if(window.innerWidth < 860){
-    return 10;
+    return 6;
   }
   return laneIndex === 0 ? 8 : 50;
 }
 
 function getWishDuration(){
-  return window.innerWidth < 860 ? (26 + Math.random() * 3) : (30 + Math.random() * 4);
+  return window.innerWidth < 860 ? (28 + Math.random() * 4) : (30 + Math.random() * 4);
 }
 
 function nextApprovedWish(){
@@ -917,7 +926,7 @@ function scheduleWishLoop(){
   if(loopTimer) clearInterval(loopTimer);
   if(!approved.length) return;
 
-  const interval = window.innerWidth < 860 ? 9000 : 7500;
+  const interval = window.innerWidth < 860 ? 10500 : 7500;
   loopTimer = setInterval(() => {
     const item = nextApprovedWish();
     if(item) spawnWish(item);
