@@ -374,6 +374,8 @@
 
 
     footer{z-index:10;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.16em;text-transform:uppercase}
+    .footer-admin-btn{cursor:pointer;border-radius:999px;min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;font-weight:900;text-transform:uppercase;letter-spacing:.10em;font-size:11px}
+    .footer-admin-btn:hover{filter:brightness(1.08);background:rgba(255,255,255,.12)}
     .corner{color:#fff;font-weight:800}
 
     .floating-write{
@@ -536,7 +538,8 @@
       .approved-title{font-size:22px}
       .approved-desc{font-size:13px}
       .admin-grid{grid-template-columns:1fr}
-      footer{gap:8px;flex-direction:column;text-align:center}
+      footer{gap:10px;flex-direction:column;text-align:center;margin-bottom:84px}
+      .footer-admin-btn{min-height:38px;padding:0 16px;font-size:10px;opacity:.78}
       .admin-login{grid-template-columns:1fr}
       .floating-write{left:auto;right:16px;bottom:16px;transform:none;padding:12px 14px}
       .floating-write small{display:none}
@@ -577,16 +580,6 @@
     <main>
       <div class="wish-sky" id="wishSky" aria-live="polite"></div>
 
-      <aside class="side-stack">
-        <section class="glass-card action-card">
-          <p style="margin:0 0 2px;color:#fff8f8;font-size:13px;line-height:1.5">Muốn gửi lời chúc? Nhấn nút <b>Gửi lời chúc</b> bên dưới. Admin duyệt comment ở nút cuối cùng.</p>
-          <div class="action-grid">
-            
-          </div>
-          <button type="button" id="openWish" class="primary-btn">Gửi lời chúc</button>
-          <button type="button" id="openAdmin" class="ghost-btn">Admin duyệt comment</button>
-        </section>
-      </aside>
     </main>
 
     <section class="approved-section" id="approvedSection">
@@ -601,7 +594,7 @@
       <div class="approved-list" id="approvedPublicList"></div>
     </section>
 
-    <footer><span>Project by <b class="corner">Skyward</b></span></footer>
+    <footer><span>Project by <b class="corner">Skyward</b></span><button type="button" id="openAdmin" class="footer-admin-btn">Admin duyệt comment</button></footer>
   </div>
 
   <button type="button" class="floating-write" id="openWishFloating" aria-label="Mở popup gửi lời chúc">
@@ -1096,10 +1089,12 @@ form.addEventListener('submit', async e => {
   }
 });
 
-$('#openWish').addEventListener('click', tryOpenWishModal);
+const openWishBtn = $('#openWish');
+if(openWishBtn) openWishBtn.addEventListener('click', tryOpenWishModal);
 $('#openWishFloating').addEventListener('click', tryOpenWishModal);
 $('#closeWish').addEventListener('click', () => closeModal('#wishModal'));
-$('#openAdmin').addEventListener('click', openAdmin);
+const openAdminBtn = $('#openAdmin');
+if(openAdminBtn) openAdminBtn.addEventListener('click', openAdmin);
 $('#closeAdmin').addEventListener('click', () => closeModal('#adminModal'));
 $('#loginAdmin').addEventListener('click', loginAdmin);
 $('#adminPassword').addEventListener('keydown', e => { if(e.key === 'Enter') loginAdmin(); });
