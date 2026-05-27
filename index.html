@@ -314,8 +314,54 @@
   font-size:18px;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
 }
-    .toast{position:fixed;left:50%;top:22px;transform:translateX(-50%) translateY(-18px);padding:12px 16px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(25,5,8,.84);backdrop-filter:blur(14px);box-shadow:0 18px 44px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.25s;z-index:100}
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(.92);
+      width:min(560px,calc(100vw - 36px));
+      padding:26px 28px;
+      border:2px solid rgba(255,78,86,.72);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,76,84,.22), transparent 46%),
+        linear-gradient(180deg,rgba(58,5,10,.96),rgba(16,2,5,.98));
+      backdrop-filter:blur(18px);
+      box-shadow:
+        0 28px 90px rgba(0,0,0,.62),
+        0 0 0 1px rgba(255,255,255,.08) inset,
+        0 0 42px rgba(239,17,26,.28);
+      color:#fff;
+      font-size:clamp(20px,3.6vw,34px);
+      line-height:1.28;
+      font-weight:1000;
+      text-align:center;
+      letter-spacing:.01em;
+      text-shadow:0 3px 18px rgba(0,0,0,.72),0 0 18px rgba(255,80,90,.32);
+      white-space:pre-line;
+      opacity:0;
+      pointer-events:none;
+      transition:.24s ease;
+      z-index:100;
+    }
+    .toast::before{
+      content:"✓";
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:58px;
+      height:58px;
+      margin:0 auto 14px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#d00912,#ff626a);
+      box-shadow:0 0 28px rgba(255,60,70,.38);
+      font-size:34px;
+      line-height:1;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translate(-50%,-50%) scale(1);
+    }
 
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.58);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:90}
     .modal-backdrop.open{display:flex}
@@ -387,7 +433,7 @@
   <div class="meteors" id="meteors"></div>
   <div class="noise"></div>
   <div class="scanlines"></div>
-  <div class="toast" id="toast">Lời chúc đã được gửi, đang chờ admin duyệt ✨</div>
+  <div class="toast" id="toast">Đã gửi thư thành công!\nĐang đợi admin phê duyệt ✨</div>
 
   <div class="app">
     <header>
@@ -418,13 +464,6 @@
       <div class="wish-sky" id="wishSky" aria-live="polite"></div>
 
       <aside class="side-stack">
-        <section class="glass-card">
-          <h3>QR PRE-SAVE COME MY WAY</h3>
-          <p>Quét mã để mở link pre-save chính thức của Come My Way.</p>
-          <div class="qr-box"><img id="qrImage" src="qr-comemyway.png" alt="QR Come My Way" /></div>
-          <div class="presale-links" id="presaleLinks"></div>
-        </section>
-
         <section class="glass-card action-card">
           <p style="margin:0 0 2px;color:#fff8f8;font-size:13px;line-height:1.5">Muốn gửi lời chúc? Nhấn nút <b>Gửi lời chúc</b> bên dưới hoặc nút đỏ ở cuối màn hình.</p>
           <div class="action-grid">
@@ -559,7 +598,7 @@ async function sheetPost(action, payload={}){
   return data;
 }
 
-function showToast(text){ toast.textContent = text; toast.classList.add('show'); clearTimeout(showToast.t); showToast.t = setTimeout(()=>toast.classList.remove('show'), 2600); }
+function showToast(text){ toast.textContent = text; toast.classList.add('show'); clearTimeout(showToast.t); showToast.t = setTimeout(()=>toast.classList.remove('show'), 4200); }
 
 function isReleaseReached(){
   return Date.now() >= new Date(CONFIG.releaseAt).getTime();
@@ -664,12 +703,7 @@ function updateCountdown(){
 }
 
 function buildQr(){
-  const qrImage = $('#qrImage');
-  qrImage.src = 'qr-comemyway.png';
-  qrImage.alt = 'QR Come My Way';
-
-  $('#presaleLinks').innerHTML = '';
-  $('#presaleLinks').style.display = 'none';
+  // Đã bỏ hiển thị QR trên page.
 }
 
 function createMeteors(){
@@ -886,7 +920,7 @@ form.addEventListener('submit', async e => {
       form.reset();
       charCount.textContent = '0/150';
       closeModal('#wishModal');
-      showToast('Lời chúc đã được gửi, đang chờ admin duyệt ✨');
+      showToast('Đã gửi thư thành công!\nĐang đợi admin phê duyệt ✨');
       return;
     }
 
@@ -897,7 +931,7 @@ form.addEventListener('submit', async e => {
     form.reset();
     charCount.textContent = '0/150';
     closeModal('#wishModal');
-    showToast('Lời chúc đã được gửi, đang chờ admin duyệt ✨');
+    showToast('Đã gửi thư thành công!\nĐang đợi admin phê duyệt ✨');
   }catch(err){
     console.error(err);
     showToast('Gửi lời chúc lỗi. Vui lòng thử lại sau.');
