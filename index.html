@@ -192,18 +192,28 @@
       text-shadow:0 2px 18px rgba(0,0,0,.8);
     }
 
-    main{position:relative;min-height:42vh;z-index:5}
-    .wish-sky{position:absolute;inset:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);z-index:2;min-height:42vh;pointer-events:none}
+    main{position:relative;z-index:5;width:min(1400px,100%);margin:0 auto;min-height:clamp(360px,48vh,560px)}
+    .wish-sky{
+      position:relative;
+      width:100%;
+      height:100%;
+      min-height:clamp(360px,48vh,560px);
+      overflow:hidden;
+      z-index:2;
+      pointer-events:none;
+      border-radius:24px;
+      isolation:isolate;
+    }
     .wish{
       position:absolute;
-      right:-34vw;
+      right:-42vw;
       display:flex;
       flex-direction:column;
       align-items:flex-start;
       gap:5px;
       padding:10px 14px;
       min-width:220px;
-      max-width:min(420px,34vw);
+      max-width:min(420px,32vw);
       border:1.5px solid rgba(255,45,55,.72);
       border-radius:16px;
       background:
@@ -226,11 +236,11 @@
     .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72)}
     .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em}
     .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
-    @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-250vw - 100%))}}
+    @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-280vw - 100%))}}
 
     .approved-section{
       width:min(1180px,92vw);
-      margin:10px auto 72px;
+      margin:18px auto 72px;
       padding:22px;
       border-radius:28px;
       border:1px solid rgba(255,45,55,.32);
@@ -379,7 +389,6 @@
     .corner{color:#fff;font-weight:800}
 
     .floating-write{
-  display:none !important;
   position:fixed;
   left:50%;
   bottom:24px;
@@ -507,7 +516,7 @@
       .title-img{width:min(50vw,680px)}
       .side-stack{position:relative;right:auto;top:auto;transform:none;width:min(560px,100%);margin:0 auto 10px}
       main{display:flex;flex-direction:column}
-      .wish-sky{position:relative;min-height:42vh;order:1}
+      .wish-sky{position:relative;min-height:clamp(340px,46vh,500px);order:1}
       .side-stack{order:2;position:relative;z-index:35}
     }
     @media (max-width:860px){
@@ -525,8 +534,8 @@
       .timebox{padding:10px 8px 9px;border-radius:14px}
       .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
       .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
-      .wish-sky{min-height:30vh;max-height:30vh;margin-bottom:12px;overflow:hidden;z-index:2}
-      .wish{max-width:min(78vw,360px)}
+      .wish-sky{min-height:clamp(340px,44vh,440px);height:clamp(340px,44vh,440px);margin-bottom:16px;overflow:hidden;z-index:2}
+      .wish{max-width:min(74vw,340px)}
       .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
       .action-grid{grid-template-columns:1fr}
 
@@ -538,7 +547,7 @@
       .approved-title{font-size:22px}
       .approved-desc{font-size:13px}
       .admin-grid{grid-template-columns:1fr}
-      footer{gap:10px;flex-direction:column;text-align:center;margin-bottom:84px}
+      footer{gap:10px;flex-direction:column;text-align:center;margin-bottom:104px}
       .footer-admin-btn{min-height:38px;padding:0 16px;font-size:10px;opacity:.78}
       .admin-login{grid-template-columns:1fr}
       .floating-write{left:auto;right:16px;bottom:16px;transform:none;padding:12px 14px}
@@ -683,7 +692,7 @@ const charCount = $('#charCount');
 const toast = $('#toast');
 let approved = [];
 let pending = [];
-let laneCursor = 0;
+let laneCooldowns = [];
 let isSubmittingWish = false;
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
@@ -845,48 +854,75 @@ function createMeteors(){
   }
 }
 
+function getWishLaneState(){
+  const skyHeight = Math.max(window.innerWidth < 860 ? 340 : 420, wishSky?.clientHeight || 0);
+  const cardHeight = window.innerWidth < 860 ? 140 : 150;
+  const lanes = Math.max(window.innerWidth < 860 ? 2 : 3, Math.min(window.innerWidth < 860 ? 2 : 3, Math.floor(skyHeight / cardHeight)));
+
+  if(laneCooldowns.length !== lanes){
+    laneCooldowns = Array(lanes).fill(0);
+  }
+
+  return { skyHeight, lanes };
+}
+
+function claimFreeLane(){
+  const { lanes } = getWishLaneState();
+  const now = Date.now();
+  let laneIndex = 0;
+  let earliest = laneCooldowns[0] || 0;
+
+  for(let i = 1; i < lanes; i++){
+    if((laneCooldowns[i] || 0) < earliest){
+      earliest = laneCooldowns[i] || 0;
+      laneIndex = i;
+    }
+  }
+
+  if((laneCooldowns[laneIndex] || 0) > now) return null;
+
+  laneCooldowns[laneIndex] = now + (window.innerWidth < 860 ? 22000 : 18000);
+  return laneIndex;
+}
+
 function spawnWish(wish, immediate=false){
-  if(!wishSky) return;
+  if(!wishSky) return false;
+
+  const laneIndex = claimFreeLane();
+  if(laneIndex === null) return false;
 
   const el = document.createElement('div');
   el.className = 'wish';
 
-  // Chia lane cố định. Mỗi lane cách nhau xa để card không đè lên nhau.
-  const skyHeight = Math.max(420, wishSky.clientHeight || 420);
-  const cardHeight = window.innerWidth < 860 ? 92 : 104;
-  const lanes = Math.max(3, Math.floor(skyHeight / cardHeight));
-  const laneIndex = laneCursor % lanes;
-  laneCursor++;
-
-  const topStart = 3;
-  const topEnd = 82;
+  const { lanes } = getWishLaneState();
+  const topStart = 4;
+  const topEnd = window.innerWidth < 860 ? 68 : 74;
   const step = lanes <= 1 ? 0 : (topEnd - topStart) / (lanes - 1);
   const top = topStart + laneIndex * step;
 
-  el.style.top = `${Math.min(84, top)}%`;
+  el.style.top = `${Math.min(topEnd, top)}%`;
 
-  // Nếu immediate=true, lời chúc xuất hiện ngay trong màn hình khi vừa mở web.
   if(immediate){
-    el.style.right = `${8 + (laneIndex % 3) * 18}vw`;
+    el.style.right = `${6 + laneIndex * 8}vw`;
   }
 
-  // Chạy chậm hơn để đọc được, đồng thời giữ card trên màn hình lâu hơn.
-  const duration = 72 + Math.random() * 18;
+  const duration = window.innerWidth < 860 ? (42 + Math.random() * 6) : (48 + Math.random() * 8);
   el.style.animationDuration = `${duration}s`;
 
   el.innerHTML = `<div class="wish-head"><i class="wish-star">✦</i><span class="wish-name">${escapeHtml(wish.name)}</span></div><div class="wish-message">${escapeHtml(wish.message)}</div>`;
 
   wishSky.appendChild(el);
-  setTimeout(() => el.remove(), (duration + 3) * 1000);
+  setTimeout(() => el.remove(), (duration + 2) * 1000);
+  return true;
 }
 
 function loopWishes(){
+  let spawned = false;
   if(approved.length){
-    spawnWish(approved[Math.floor(Math.random()*approved.length)]);
+    spawned = spawnWish(approved[Math.floor(Math.random()*approved.length)]);
   }
 
-  // Mỗi lời chúc cách nhau 8-12 giây để không bị chồng lên nhau.
-  setTimeout(loopWishes, 8000 + Math.random()*4000);
+  setTimeout(loopWishes, spawned ? (12000 + Math.random()*2500) : 4500);
 }
 
 
@@ -1130,8 +1166,8 @@ window.addEventListener('resize', createMeteors);
   // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
   setInterval(reloadWishesFromSheet, 15000);
 
-  approved.slice(0,5).forEach((w,i) => {
-    setTimeout(() => spawnWish(w, true), i*650);
+  approved.slice(0,2).forEach((w,i) => {
+    setTimeout(() => spawnWish(w, true), i*4500);
   });
   setTimeout(loopWishes, 1800);
 })();
