@@ -192,21 +192,32 @@
       text-shadow:0 2px 18px rgba(0,0,0,.8);
     }
 
-    main{position:relative;z-index:5;width:min(1400px,100%);margin:0 auto;min-height:clamp(360px,48vh,560px)}
-    .wish-sky{
+    main{
       position:relative;
-      width:100%;
-      height:100%;
-      min-height:clamp(360px,48vh,560px);
-      overflow:hidden;
-      z-index:2;
+      z-index:5;
+      width:min(1400px,100%);
+      margin:0 auto;
+      min-height:0;
+      height:0;
       pointer-events:none;
-      border-radius:24px;
+    }
+    .wish-sky{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      height:100svh;
+      min-height:100vh;
+      min-height:100svh;
+      overflow:hidden;
+      z-index:4;
+      pointer-events:none;
+      border-radius:0;
       isolation:isolate;
     }
     .wish{
       position:absolute;
-      left:100%;
+      left:100vw;
       right:auto;
       display:flex;
       flex-direction:column;
@@ -214,6 +225,7 @@
       gap:6px;
       padding:12px 16px;
       width:min(460px,34vw);
+      max-width:calc(100vw - 28px);
       border:1.5px solid rgba(255,45,55,.72);
       border-radius:18px;
       background:
@@ -231,13 +243,14 @@
       overflow:visible;
       overflow-wrap:anywhere;
       word-break:break-word;
+      will-change:transform;
       animation:flyOnce linear 1 forwards;
     }
     .wish-head{display:flex;align-items:center;gap:8px}
     .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72);flex:0 0 auto}
     .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em;line-height:1.2}
     .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.32;font-weight:800}
-    @keyframes flyOnce{from{transform:translateX(0)}to{transform:translateX(calc(-220vw - 100%))}}
+    @keyframes flyOnce{from{transform:translateX(8vw)}to{transform:translateX(calc(-118vw - 100%))}}
 
     .approved-section{
       width:min(1180px,92vw);
@@ -516,8 +529,8 @@
       .countdown-shell{width:min(460px,70vw)}
       .title-img{width:min(50vw,680px)}
       .side-stack{position:relative;right:auto;top:auto;transform:none;width:min(560px,100%);margin:0 auto 10px}
-      main{display:flex;flex-direction:column}
-      .wish-sky{position:relative;min-height:clamp(340px,46vh,500px);order:1}
+      main{display:block;min-height:0;height:0}
+      .wish-sky{position:fixed;inset:0;width:100vw;height:100svh;min-height:100svh;order:initial}
       .side-stack{order:2;position:relative;z-index:35}
     }
     @media (max-width:860px){
@@ -535,19 +548,32 @@
       .timebox{padding:10px 8px 9px;border-radius:14px}
       .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
       .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
-      main{padding-bottom:96px}
-      .wish-sky{min-height:300px;height:300px;margin-bottom:10px;overflow:hidden;z-index:2}
+      main{min-height:0;height:0;padding-bottom:0}
+      .wish-sky{
+        position:fixed;
+        inset:0;
+        width:100vw;
+        height:100vh;
+        height:100svh;
+        min-height:100vh;
+        min-height:100svh;
+        margin:0;
+        overflow:hidden;
+        z-index:4;
+      }
       .wish{
         min-width:0;
-        width:min(72vw,240px);
-        max-width:min(72vw,240px);
-        padding:7px 9px;
-        border-radius:14px;
+        width:min(74vw,280px);
+        max-width:min(74vw,280px);
+        padding:6px 8px;
+        gap:3px;
+        border-radius:12px;
+        border-width:1px;
       }
-      .wish-head{gap:5px}
+      .wish-head{gap:4px}
       .wish-star{font-size:7px}
-      .wish-name{font-size:8px;line-height:1.15}
-      .wish-message{display:block;color:#ffffff;font-size:8.5px;line-height:1.22;font-weight:780}
+      .wish-name{font-size:8px;line-height:1.12}
+      .wish-message{display:block;color:#ffffff;font-size:8px;line-height:1.18;font-weight:760}
       .action-grid{grid-template-columns:1fr}
 
       .side-stack{width:100%;max-width:560px;margin:8px auto 18px}
@@ -683,12 +709,7 @@ const CONFIG = {
   googleScriptUrl: 'https://script.google.com/macros/s/AKfycbwmtCHMc1tdSf8AZw7vqHxQiKFIKWcPfiJdWNNijNjTF4Wt-jv1w96HwYpBoRPkFrGf5w/exec'
 };
 
-const sampleApproved = [
-  {id:'s1', name:'Skyward', message:'Chúc Come My Way đại thắng, mở ra một kỷ nguyên thật rực rỡ!', approvedAt:'2026-05-26T10:00:00+07:00'},
-  {id:'s2', name:'Sky', message:'M-TP khải hoàn, chúng em luôn ở đây và luôn tự hào.', approvedAt:'2026-05-26T10:05:00+07:00'},
-  {id:'s3', name:'Gia đình Sky', message:'Chúc anh Tùng comeback thật bùng nổ, mọi sân khấu đều đỏ lửa.', approvedAt:'2026-05-26T10:10:00+07:00'},
-  {id:'s4', name:'Một chiếc Sky', message:'Come My Way on top, Sơn Tùng never stop!', approvedAt:'2026-05-26T10:15:00+07:00'}
-];
+const sampleApproved = [];
 
 const STORAGE = {
   pending: 'skyward_khai_hoan_pending_v3',
@@ -708,6 +729,7 @@ let isSubmittingWish = false;
 let wishQueueIndex = 0;
 let laneCursor = 0;
 let loopTimer = null;
+let laneTimers = [];
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
 function escapeHtml(str){ return safeText(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -797,11 +819,6 @@ async function loadState(){
       pending = data.pending || [];
       approved = data.approved || [];
 
-      // Nếu sheet chưa có lời chúc nào, vẫn hiện sample demo.
-      if(!approved.length && !pending.length){
-        approved = [...sampleApproved];
-      }
-
       refreshCounters();
       wishQueueIndex = 0;
       return;
@@ -814,10 +831,6 @@ async function loadState(){
   // Fallback: LocalStorage nếu chưa cấu hình Google Sheet hoặc Google Sheet lỗi.
   pending = getStore(STORAGE.pending, []);
   approved = getStore(STORAGE.approved, []);
-  if(!approved.length){
-    approved = [...sampleApproved];
-    setStore(STORAGE.approved, approved);
-  }
   refreshCounters();
   wishQueueIndex = 0;
 }
@@ -870,19 +883,42 @@ function createMeteors(){
   }
 }
 
+function getLaneHeight(){
+  // Chiều cao mỗi line đủ rộng để lời chúc dài không bị đè lên nhau.
+  if(window.innerWidth < 430) return 74;
+  if(window.innerWidth < 860) return 82;
+  return 108;
+}
+
+function getLanePadding(){
+  if(window.innerWidth < 860) return 18;
+  return 34;
+}
+
 function getLaneCount(){
-  return window.innerWidth < 860 ? 1 : 2;
+  const h = window.innerHeight || document.documentElement.clientHeight || 720;
+  const usable = Math.max(260, h - getLanePadding() * 2);
+  return Math.max(3, Math.floor(usable / getLaneHeight()));
 }
 
 function getLaneTop(laneIndex){
-  if(window.innerWidth < 860){
-    return 6;
-  }
-  return laneIndex === 0 ? 8 : 50;
+  const h = window.innerHeight || document.documentElement.clientHeight || 720;
+  const laneCount = getLaneCount();
+  const laneHeight = getLaneHeight();
+  const totalHeight = laneCount * laneHeight;
+  const start = Math.max(getLanePadding(), Math.floor((h - totalHeight) / 2));
+  return start + laneIndex * laneHeight;
 }
 
 function getWishDuration(){
-  return window.innerWidth < 860 ? (28 + Math.random() * 4) : (30 + Math.random() * 4);
+  if(window.innerWidth < 430) return 17;
+  if(window.innerWidth < 860) return 19;
+  return 24;
+}
+
+function getLaneDelay(laneIndex){
+  if(window.innerWidth < 860) return 850 + laneIndex * 150;
+  return 1100 + laneIndex * 220;
 }
 
 function nextApprovedWish(){
@@ -896,41 +932,67 @@ function spawnWish(wish, laneIndex=null){
   if(!wishSky || !wish) return false;
 
   const laneCount = getLaneCount();
-  const lane = laneIndex === null ? (laneCursor % laneCount) : laneIndex;
+  const lane = laneIndex === null ? (laneCursor % laneCount) : (laneIndex % laneCount);
   laneCursor = (lane + 1) % laneCount;
 
   const el = document.createElement('div');
   el.className = 'wish';
-  el.style.top = `${getLaneTop(lane)}%`;
+  el.style.top = `${getLaneTop(lane)}px`;
 
   const duration = getWishDuration();
   el.style.animationDuration = `${duration}s`;
   el.innerHTML = `<div class="wish-head"><i class="wish-star">✦</i><span class="wish-name">${escapeHtml(wish.name)}</span></div><div class="wish-message">${escapeHtml(wish.message)}</div>`;
 
   wishSky.appendChild(el);
-  setTimeout(() => el.remove(), (duration + 1) * 1000);
+  setTimeout(() => el.remove(), (duration + 0.8) * 1000);
   return true;
 }
 
+function clearWishTimers(){
+  if(loopTimer) clearInterval(loopTimer);
+  loopTimer = null;
+  laneTimers.forEach(t => clearTimeout(t));
+  laneTimers = [];
+}
+
 function seedInitialWishes(){
-  if(!approved.length) return;
+  if(!wishSky) return;
   wishSky.innerHTML = '';
+  laneCursor = 0;
+  if(!approved.length) return;
+
   const laneCount = getLaneCount();
   for(let lane = 0; lane < laneCount; lane++){
-    const item = nextApprovedWish();
-    if(item) spawnWish(item, lane);
+    laneTimers.push(setTimeout(() => {
+      const item = nextApprovedWish();
+      if(item) spawnWish(item, lane);
+    }, getLaneDelay(lane)));
   }
 }
 
 function scheduleWishLoop(){
-  if(loopTimer) clearInterval(loopTimer);
+  clearWishTimers();
   if(!approved.length) return;
 
-  const interval = window.innerWidth < 860 ? 10500 : 7500;
-  loopTimer = setInterval(() => {
-    const item = nextApprovedWish();
-    if(item) spawnWish(item);
-  }, interval);
+  seedInitialWishes();
+
+  const laneCount = getLaneCount();
+  const duration = getWishDuration();
+
+  for(let lane = 0; lane < laneCount; lane++){
+    const runLane = () => {
+      const item = nextApprovedWish();
+      if(item) spawnWish(item, lane);
+
+      // Cùng một line chỉ sinh lời chúc mới sau khi lời chúc cũ đã bay hết,
+      // nên không bị chồng đè. Nhiều line được rải thời gian để nhìn liên tục.
+      const nextDelay = (duration + 0.8) * 1000;
+      laneTimers[lane] = setTimeout(runLane, nextDelay);
+    };
+
+    const firstDelay = getLaneDelay(lane) + (duration + 0.8) * 1000;
+    laneTimers[lane] = setTimeout(runLane, firstDelay);
+  }
 }
 
 async function reloadWishesFromSheet(){
@@ -1001,6 +1063,7 @@ async function approveWish(id){
       renderAdminLists();
       const approvedItem = approved.find(x => x.id === id);
       if(approvedItem) spawnWish(approvedItem);
+      scheduleWishLoop();
       showToast('Đã duyệt lời chúc, comment bắt đầu bay ✨');
       return;
     }catch(err){
@@ -1020,6 +1083,7 @@ async function approveWish(id){
   setStore(STORAGE.approved, approved.slice(-300));
   renderAdminLists();
   spawnWish(approvedItem);
+  scheduleWishLoop();
   showToast('Đã duyệt lời chúc, comment bắt đầu bay ✨');
 }
 
@@ -1162,7 +1226,7 @@ $('#pendingList').addEventListener('click', async e => {
 ['#wishModal','#adminModal'].forEach(sel => {
   $(sel).addEventListener('click', e => { if(e.target === $(sel)) closeModal(sel); });
 });
-window.addEventListener('resize', () => { createMeteors(); seedInitialWishes(); scheduleWishLoop(); });
+window.addEventListener('resize', () => { createMeteors(); scheduleWishLoop(); });
 
 (async function init(){
   await loadState();
@@ -1175,7 +1239,6 @@ window.addEventListener('resize', () => { createMeteors(); seedInitialWishes(); 
   // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
   setInterval(reloadWishesFromSheet, 15000);
 
-  seedInitialWishes();
   scheduleWishLoop();
 })();
 </script>
