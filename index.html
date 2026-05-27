@@ -534,8 +534,9 @@
       .timebox{padding:10px 8px 9px;border-radius:14px}
       .tracker-pill{margin:18px auto 12px;padding:10px 16px;font-size:11px;letter-spacing:.12em}
       .tracker-desc{font-family:"Cormorant Garamond","Times New Roman",serif;font-size:13px;max-width:88vw;line-height:1.38}
-      .wish-sky{min-height:clamp(340px,44vh,440px);height:clamp(340px,44vh,440px);margin-bottom:16px;overflow:hidden;z-index:2}
-      .wish{max-width:min(74vw,340px)}
+      main{padding-bottom:96px}
+      .wish-sky{min-height:clamp(300px,38vh,380px);height:clamp(300px,38vh,380px);margin-bottom:10px;overflow:hidden;z-index:2}
+      .wish{min-width:250px;max-width:min(78vw,340px)}
       .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
       .action-grid{grid-template-columns:1fr}
 
@@ -550,7 +551,8 @@
       footer{gap:10px;flex-direction:column;text-align:center;margin-bottom:104px}
       .footer-admin-btn{min-height:38px;padding:0 16px;font-size:10px;opacity:.78}
       .admin-login{grid-template-columns:1fr}
-      .floating-write{left:auto;right:16px;bottom:16px;transform:none;padding:12px 14px}
+      .floating-write{left:auto;right:12px;bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);transform:none;padding:10px 12px;max-width:calc(100vw - 24px)}
+      .floating-write span{font-size:13px}
       .floating-write small{display:none}
     }
   </style>
@@ -866,7 +868,7 @@ function getWishLaneState(){
   return { skyHeight, lanes };
 }
 
-function claimFreeLane(){
+function claimFreeLane(force=false){
   const { lanes } = getWishLaneState();
   const now = Date.now();
   let laneIndex = 0;
@@ -879,24 +881,24 @@ function claimFreeLane(){
     }
   }
 
-  if((laneCooldowns[laneIndex] || 0) > now) return null;
+  if(!force && (laneCooldowns[laneIndex] || 0) > now) return null;
 
   laneCooldowns[laneIndex] = now + (window.innerWidth < 860 ? 22000 : 18000);
   return laneIndex;
 }
 
-function spawnWish(wish, immediate=false){
+function spawnWish(wish, immediate=false, force=false){
   if(!wishSky) return false;
 
-  const laneIndex = claimFreeLane();
+  const laneIndex = claimFreeLane(force);
   if(laneIndex === null) return false;
 
   const el = document.createElement('div');
   el.className = 'wish';
 
   const { lanes } = getWishLaneState();
-  const topStart = 4;
-  const topEnd = window.innerWidth < 860 ? 68 : 74;
+  const topStart = window.innerWidth < 860 ? 2 : 4;
+  const topEnd = window.innerWidth < 860 ? 52 : 70;
   const step = lanes <= 1 ? 0 : (topEnd - topStart) / (lanes - 1);
   const top = topStart + laneIndex * step;
 
@@ -912,16 +914,34 @@ function spawnWish(wish, immediate=false){
   el.innerHTML = `<div class="wish-head"><i class="wish-star">✦</i><span class="wish-name">${escapeHtml(wish.name)}</span></div><div class="wish-message">${escapeHtml(wish.message)}</div>`;
 
   wishSky.appendChild(el);
-  setTimeout(() => el.remove(), (duration + 2) * 1000);
+  setTimeout(() => {
+    el.remove();
+    ensureMinimumVisibleWishes();
+  }, (duration + 2) * 1000);
   return true;
 }
 
+function ensureMinimumVisibleWishes(minVisible = 1){
+  if(!wishSky || !approved.length) return;
+
+  const activeCount = wishSky.querySelectorAll('.wish').length;
+  if(activeCount >= minVisible) return;
+
+  laneCooldowns = laneCooldowns.map(() => 0);
+  for(let i = activeCount; i < minVisible; i++){
+    const item = approved[Math.floor(Math.random()*approved.length)];
+    if(!spawnWish(item, false, true)) break;
+  }
+}
+
 function loopWishes(){
+  ensureMinimumVisibleWishes(1);
   let spawned = false;
   if(approved.length){
     spawned = spawnWish(approved[Math.floor(Math.random()*approved.length)]);
   }
 
+  ensureMinimumVisibleWishes(1);
   setTimeout(loopWishes, spawned ? (12000 + Math.random()*2500) : 4500);
 }
 
@@ -1167,9 +1187,11 @@ window.addEventListener('resize', createMeteors);
   setInterval(reloadWishesFromSheet, 15000);
 
   approved.slice(0,2).forEach((w,i) => {
-    setTimeout(() => spawnWish(w, true), i*4500);
+    setTimeout(() => spawnWish(w, true, true), i*4500);
   });
+  setTimeout(() => ensureMinimumVisibleWishes(1), 600);
   setTimeout(loopWishes, 1800);
+  setInterval(() => ensureMinimumVisibleWishes(1), 3500);
 })();
 </script>
 </body>
