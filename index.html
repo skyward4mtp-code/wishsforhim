@@ -306,6 +306,46 @@
       grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
     }
+    .approved-pagination{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+    .page-btn{
+      min-width:38px;
+      height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,70,80,.36);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .page-btn:hover{
+      background:rgba(255,255,255,.12);
+      border-color:rgba(255,90,100,.62);
+    }
+    .page-btn.active{
+      background:linear-gradient(135deg,#d00912,#ff5158);
+      border-color:rgba(255,120,130,.72);
+      box-shadow:0 0 18px rgba(239,17,26,.26);
+    }
+    .page-btn:disabled{
+      opacity:.42;
+      cursor:not-allowed;
+    }
+    .page-info{
+      color:rgba(255,255,255,.72);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
     .approved-item{
       padding:14px 15px;
       border-radius:18px;
@@ -567,6 +607,9 @@
       .approved-section{width:100%;margin:8px auto 22px;padding:16px;border-radius:22px}
       .approved-head{align-items:flex-start;flex-direction:column}
       .approved-list{grid-template-columns:1fr}
+      .approved-pagination{gap:6px;margin-top:14px}
+      .page-btn{min-width:34px;height:34px;padding:0 10px;font-size:12px}
+      .page-info{width:100%;text-align:center;margin-top:2px}
       .approved-title{font-size:22px}
       .approved-desc{font-size:13px}
       .admin-grid{grid-template-columns:1fr}
@@ -603,7 +646,7 @@
           </div>
         </div>
 
-        <a class="mv-link" id="mvLink" href="https://www.youtube.com/" target="_blank" rel="noopener">Xem MV Come My Way</a>
+        <a class="mv-link" id="mvLink" href="https://youtu.be/SlQR9iu09bQ?si=wMUS2rtGXKa7XKKE" target="_blank" rel="noopener">Xem MV Come My Way</a>
         <div class="tracker-pill">Skyward – All About Sơn Tùng M-TP</div>
         <p class="tracker-desc">Hãy gửi lời chúc đến Sơn Tùng M-TP trước thềm comeback với siêu phẩm COME MY WAY nhé.</p>
       </section>
@@ -620,11 +663,12 @@
         <div>
           <p class="approved-kicker">Wishes for Sơn Tùng M-TP & Come My Way</p>
           <h2 class="approved-title">Những lời yêu thương sky gửi Tùng</h2>
-          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc</p>
+          <p class="approved-desc">Sky chỉ muốn Tùng biết là "SKY YÊU TÙNG NHIỀU LẮM"</p>
         </div>
         <div class="approved-count"><span id="approvedPublicCount">0</span> lời chúc</div>
       </div>
       <div class="approved-list" id="approvedPublicList"></div>
+      <div class="approved-pagination" id="approvedPagination"></div>
     </section>
 
     <footer><span>Project by <b class="corner">Skyward</b></span><button type="button" id="openAdmin" class="footer-admin-btn">Admin duyệt comment</button></footer>
@@ -641,7 +685,7 @@
         <h3>Gửi lời chúc tới Come My Way</h3>
         <button type="button" id="closeWish" class="close-btn">×</button>
       </div>
-      <p class="form-note" id="wishFormNote">Điền tên và lời chúc. Sau khi admin duyệt, comment của bạn sẽ bay ngang trên màn hình.</p>
+      <p class="form-note" id="wishFormNote">Điền tên và lời chúc. Sau khi admin duyệt, comment của bạn sẽ hiển thị trên màn hình.</p>
       <div class="wish-closed-note" id="wishClosedNote">Come My Way đã ra mắt. Skyward đã đóng nhận lời chúc mới, cảm ơn bạn đã đồng hành cùng project ✨</div>
       <form class="wish-form" id="wishForm">
         <input id="name" maxlength="28" placeholder="Tên của Sky" required />
@@ -715,6 +759,8 @@ let isSubmittingWish = false;
 let wishQueueIndex = 0;
 let laneCursor = 0;
 let loopTimer = null;
+const PUBLIC_PAGE_SIZE = 10;
+let publicApprovedPage = 1;
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
 function escapeHtml(str){ return safeText(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -1021,24 +1067,85 @@ function renderWishCards(listEl, items, type){
     </article>`).join('');
 }
 
+function getApprovedPublicItems(){
+  // Sắp xếp từ lời chúc đầu tiên đến lời chúc gần nhất.
+  // Ưu tiên thời gian gửi createdAt, nếu thiếu thì dùng approvedAt.
+  return approved
+    .map((item, index) => {
+      const time = Date.parse(item.createdAt || item.approvedAt || '') || index;
+      return { item, index, time };
+    })
+    .sort((a, b) => a.time - b.time || a.index - b.index)
+    .map(x => x.item);
+}
+
+function renderPublicPagination(totalPages){
+  const pageEl = $('#approvedPagination');
+  if(!pageEl) return;
+
+  if(totalPages <= 1){
+    pageEl.innerHTML = '';
+    return;
+  }
+
+  const buttons = [];
+
+  buttons.push(`
+    <button type="button" class="page-btn" data-page="prev" ${publicApprovedPage <= 1 ? 'disabled' : ''}>
+      ‹
+    </button>
+  `);
+
+  for(let i = 1; i <= totalPages; i++){
+    buttons.push(`
+      <button type="button" class="page-btn ${i === publicApprovedPage ? 'active' : ''}" data-page="${i}">
+        ${i}
+      </button>
+    `);
+  }
+
+  buttons.push(`
+    <button type="button" class="page-btn" data-page="next" ${publicApprovedPage >= totalPages ? 'disabled' : ''}>
+      ›
+    </button>
+  `);
+
+  buttons.push(`
+    <span class="page-info">Trang ${publicApprovedPage}/${totalPages}</span>
+  `);
+
+  pageEl.innerHTML = buttons.join('');
+}
+
 function renderPublicApprovedList(){
   const listEl = $('#approvedPublicList');
   const countEl = $('#approvedPublicCount');
   if(!listEl) return;
 
-  const items = approved.slice().reverse();
+  const items = getApprovedPublicItems();
   if(countEl) countEl.textContent = items.length;
 
   if(!items.length){
+    publicApprovedPage = 1;
     listEl.innerHTML = '<div class="approved-empty">Chưa có lời chúc nào được duyệt.</div>';
+    renderPublicPagination(1);
     return;
   }
 
-  listEl.innerHTML = items.map(item => `
+  const totalPages = Math.max(1, Math.ceil(items.length / PUBLIC_PAGE_SIZE));
+  publicApprovedPage = Math.min(Math.max(publicApprovedPage, 1), totalPages);
+
+  const start = (publicApprovedPage - 1) * PUBLIC_PAGE_SIZE;
+  const pageItems = items.slice(start, start + PUBLIC_PAGE_SIZE);
+
+  listEl.innerHTML = pageItems.map(item => `
     <article class="approved-item">
       <strong>✦ ${escapeHtml(item.name)}</strong>
       <p>${escapeHtml(item.message)}</p>
-    </article>`).join('');
+    </article>
+  `).join('');
+
+  renderPublicPagination(totalPages);
 }
 
 function renderAdminLists(){
@@ -1199,6 +1306,33 @@ if(openAdminBtn) openAdminBtn.addEventListener('click', openAdmin);
 $('#closeAdmin').addEventListener('click', () => closeModal('#adminModal'));
 $('#loginAdmin').addEventListener('click', loginAdmin);
 $('#adminPassword').addEventListener('keydown', e => { if(e.key === 'Enter') loginAdmin(); });
+const approvedPagination = $('#approvedPagination');
+if(approvedPagination){
+  approvedPagination.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-page]');
+    if(!btn || btn.disabled) return;
+
+    const items = getApprovedPublicItems();
+    const totalPages = Math.max(1, Math.ceil(items.length / PUBLIC_PAGE_SIZE));
+    const page = btn.dataset.page;
+
+    if(page === 'prev'){
+      publicApprovedPage = Math.max(1, publicApprovedPage - 1);
+    }else if(page === 'next'){
+      publicApprovedPage = Math.min(totalPages, publicApprovedPage + 1);
+    }else{
+      publicApprovedPage = Number(page) || 1;
+    }
+
+    renderPublicApprovedList();
+
+    const section = $('#approvedSection');
+    if(section){
+      section.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  });
+}
+
 $('#pendingList').addEventListener('click', async e => {
   const btn = e.target.closest('button[data-action]');
   if(!btn || btn.disabled) return;
