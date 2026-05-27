@@ -206,16 +206,16 @@
     }
     .wish{
       position:absolute;
-      right:-42vw;
+      left:100%;
+      right:auto;
       display:flex;
       flex-direction:column;
       align-items:flex-start;
-      gap:5px;
-      padding:10px 14px;
-      min-width:220px;
-      max-width:min(420px,32vw);
+      gap:6px;
+      padding:12px 16px;
+      width:min(460px,34vw);
       border:1.5px solid rgba(255,45,55,.72);
-      border-radius:16px;
+      border-radius:18px;
       background:
         radial-gradient(circle at 0% 0%, rgba(255,70,80,.16), transparent 38%),
         linear-gradient(180deg,rgba(90,8,14,.42),rgba(30,2,6,.72));
@@ -228,15 +228,16 @@
       font-weight:700;
       text-shadow:0 2px 10px rgba(0,0,0,.8);
       white-space:normal;
-      overflow:hidden;
-      animation:fly linear infinite;
-      animation-duration:68s;
+      overflow:visible;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      animation:flyOnce linear 1 forwards;
     }
     .wish-head{display:flex;align-items:center;gap:8px}
     .wish-star{font-style:normal;color:#ff4b55;font-size:12px;opacity:.96;text-shadow:0 0 10px rgba(255,40,50,.72)}
     .wish-name{display:block;color:#ffd1d3;font-size:13px;font-weight:900;letter-spacing:.02em}
     .wish-message{display:block;color:#ffffff;font-size:14px;line-height:1.28;font-weight:800}
-    @keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(-280vw - 100%))}}
+    @keyframes flyOnce{from{transform:translateX(0)}to{transform:translateX(calc(-220vw - 100%))}}
 
     .approved-section{
       width:min(1180px,92vw);
@@ -596,9 +597,9 @@
     <section class="approved-section" id="approvedSection">
       <div class="approved-head">
         <div>
-          <p class="approved-kicker">Approved Wishes</p>
-          <h2 class="approved-title">Danh sách lời chúc đã duyệt</h2>
-          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc đã được admin phê duyệt. Phần lời chúc bay ngang vẫn giữ để tạo hiệu ứng không khí trên màn hình chính.</p>
+          <p class="approved-kicker">Wishes for Sơn Tùng M-TP</p>
+          <h2 class="approved-title">Những lời yêu thương sky dành tặng Tùng</h2>
+          <p class="approved-desc">Kéo xuống để đọc lại đầy đủ các lời chúc đã được admin phê duyệt</p>
         </div>
         <div class="approved-count"><span id="approvedPublicCount">0</span> lời chúc</div>
       </div>
@@ -694,8 +695,10 @@ const charCount = $('#charCount');
 const toast = $('#toast');
 let approved = [];
 let pending = [];
-let laneCooldowns = [];
 let isSubmittingWish = false;
+let wishQueueIndex = 0;
+let laneCursor = 0;
+let loopTimer = null;
 
 function safeText(str){ return String(str || '').replace(/[<>]/g,'').trim(); }
 function escapeHtml(str){ return safeText(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
@@ -791,6 +794,7 @@ async function loadState(){
       }
 
       refreshCounters();
+      wishQueueIndex = 0;
       return;
     }catch(err){
       console.error(err);
@@ -806,6 +810,7 @@ async function loadState(){
     setStore(STORAGE.approved, approved);
   }
   refreshCounters();
+  wishQueueIndex = 0;
 }
 
 function updateCountdown(){
@@ -856,95 +861,68 @@ function createMeteors(){
   }
 }
 
-function getWishLaneState(){
-  const skyHeight = Math.max(window.innerWidth < 860 ? 340 : 420, wishSky?.clientHeight || 0);
-  const cardHeight = window.innerWidth < 860 ? 140 : 150;
-  const lanes = Math.max(window.innerWidth < 860 ? 2 : 3, Math.min(window.innerWidth < 860 ? 2 : 3, Math.floor(skyHeight / cardHeight)));
-
-  if(laneCooldowns.length !== lanes){
-    laneCooldowns = Array(lanes).fill(0);
-  }
-
-  return { skyHeight, lanes };
+function getLaneCount(){
+  return window.innerWidth < 860 ? 1 : 2;
 }
 
-function claimFreeLane(force=false){
-  const { lanes } = getWishLaneState();
-  const now = Date.now();
-  let laneIndex = 0;
-  let earliest = laneCooldowns[0] || 0;
-
-  for(let i = 1; i < lanes; i++){
-    if((laneCooldowns[i] || 0) < earliest){
-      earliest = laneCooldowns[i] || 0;
-      laneIndex = i;
-    }
+function getLaneTop(laneIndex){
+  if(window.innerWidth < 860){
+    return 10;
   }
-
-  if(!force && (laneCooldowns[laneIndex] || 0) > now) return null;
-
-  laneCooldowns[laneIndex] = now + (window.innerWidth < 860 ? 22000 : 18000);
-  return laneIndex;
+  return laneIndex === 0 ? 8 : 50;
 }
 
-function spawnWish(wish, immediate=false, force=false){
-  if(!wishSky) return false;
+function getWishDuration(){
+  return window.innerWidth < 860 ? (26 + Math.random() * 3) : (30 + Math.random() * 4);
+}
 
-  const laneIndex = claimFreeLane(force);
-  if(laneIndex === null) return false;
+function nextApprovedWish(){
+  if(!approved.length) return null;
+  const item = approved[wishQueueIndex % approved.length];
+  wishQueueIndex = (wishQueueIndex + 1) % Math.max(approved.length, 1);
+  return item;
+}
+
+function spawnWish(wish, laneIndex=null){
+  if(!wishSky || !wish) return false;
+
+  const laneCount = getLaneCount();
+  const lane = laneIndex === null ? (laneCursor % laneCount) : laneIndex;
+  laneCursor = (lane + 1) % laneCount;
 
   const el = document.createElement('div');
   el.className = 'wish';
+  el.style.top = `${getLaneTop(lane)}%`;
 
-  const { lanes } = getWishLaneState();
-  const topStart = window.innerWidth < 860 ? 2 : 4;
-  const topEnd = window.innerWidth < 860 ? 52 : 70;
-  const step = lanes <= 1 ? 0 : (topEnd - topStart) / (lanes - 1);
-  const top = topStart + laneIndex * step;
-
-  el.style.top = `${Math.min(topEnd, top)}%`;
-
-  if(immediate){
-    el.style.right = `${6 + laneIndex * 8}vw`;
-  }
-
-  const duration = window.innerWidth < 860 ? (42 + Math.random() * 6) : (48 + Math.random() * 8);
+  const duration = getWishDuration();
   el.style.animationDuration = `${duration}s`;
-
   el.innerHTML = `<div class="wish-head"><i class="wish-star">✦</i><span class="wish-name">${escapeHtml(wish.name)}</span></div><div class="wish-message">${escapeHtml(wish.message)}</div>`;
 
   wishSky.appendChild(el);
-  setTimeout(() => {
-    el.remove();
-    ensureMinimumVisibleWishes();
-  }, (duration + 2) * 1000);
+  setTimeout(() => el.remove(), (duration + 1) * 1000);
   return true;
 }
 
-function ensureMinimumVisibleWishes(minVisible = 1){
-  if(!wishSky || !approved.length) return;
-
-  const activeCount = wishSky.querySelectorAll('.wish').length;
-  if(activeCount >= minVisible) return;
-
-  laneCooldowns = laneCooldowns.map(() => 0);
-  for(let i = activeCount; i < minVisible; i++){
-    const item = approved[Math.floor(Math.random()*approved.length)];
-    if(!spawnWish(item, false, true)) break;
+function seedInitialWishes(){
+  if(!approved.length) return;
+  wishSky.innerHTML = '';
+  const laneCount = getLaneCount();
+  for(let lane = 0; lane < laneCount; lane++){
+    const item = nextApprovedWish();
+    if(item) spawnWish(item, lane);
   }
 }
 
-function loopWishes(){
-  ensureMinimumVisibleWishes(1);
-  let spawned = false;
-  if(approved.length){
-    spawned = spawnWish(approved[Math.floor(Math.random()*approved.length)]);
-  }
+function scheduleWishLoop(){
+  if(loopTimer) clearInterval(loopTimer);
+  if(!approved.length) return;
 
-  ensureMinimumVisibleWishes(1);
-  setTimeout(loopWishes, spawned ? (12000 + Math.random()*2500) : 4500);
+  const interval = window.innerWidth < 860 ? 9000 : 7500;
+  loopTimer = setInterval(() => {
+    const item = nextApprovedWish();
+    if(item) spawnWish(item);
+  }, interval);
 }
-
 
 async function reloadWishesFromSheet(){
   if(!hasGoogleSheet()) return;
@@ -952,6 +930,7 @@ async function reloadWishesFromSheet(){
     const data = await sheetGet('list');
     pending = data.pending || [];
     approved = data.approved || [];
+    if(wishQueueIndex >= Math.max(approved.length,1)) wishQueueIndex = 0;
     refreshCounters();
     if(getStore(STORAGE.admin,false)) renderAdminLists();
   }catch(err){
@@ -1027,6 +1006,7 @@ async function approveWish(id){
   const item = pending.splice(idx,1)[0];
   const approvedItem = {...item, approvedAt: new Date().toISOString()};
   approved.push(approvedItem);
+  if(wishQueueIndex >= Math.max(approved.length,1)) wishQueueIndex = 0;
   setStore(STORAGE.pending, pending);
   setStore(STORAGE.approved, approved.slice(-300));
   renderAdminLists();
@@ -1173,7 +1153,7 @@ $('#pendingList').addEventListener('click', async e => {
 ['#wishModal','#adminModal'].forEach(sel => {
   $(sel).addEventListener('click', e => { if(e.target === $(sel)) closeModal(sel); });
 });
-window.addEventListener('resize', createMeteors);
+window.addEventListener('resize', () => { createMeteors(); seedInitialWishes(); scheduleWishLoop(); });
 
 (async function init(){
   await loadState();
@@ -1186,12 +1166,8 @@ window.addEventListener('resize', createMeteors);
   // Tự động đồng bộ Google Sheet 15 giây/lần để admin/người dùng khác cập nhật realtime tương đối.
   setInterval(reloadWishesFromSheet, 15000);
 
-  approved.slice(0,2).forEach((w,i) => {
-    setTimeout(() => spawnWish(w, true, true), i*4500);
-  });
-  setTimeout(() => ensureMinimumVisibleWishes(1), 600);
-  setTimeout(loopWishes, 1800);
-  setInterval(() => ensureMinimumVisibleWishes(1), 3500);
+  seedInitialWishes();
+  scheduleWishLoop();
 })();
 </script>
 </body>
